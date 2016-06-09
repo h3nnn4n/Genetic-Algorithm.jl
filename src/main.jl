@@ -29,6 +29,13 @@ function main(name)
         iter += 1
 
         new   = roulette(population)
+
+        if rand() < 0.01
+            #=println("CANCER!!!")=#
+            p = rand(1:populationSize)
+            population[p] = cancer(population[p], formula)
+        end
+
         newer = mate(new, formula)
         diver = diversity(newer)
 
