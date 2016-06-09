@@ -39,7 +39,7 @@ function main(name)
             end
 
             if progress
-                println("$iter \t $(best.fitness) \t $(worst.fitness) \t $(median.fitness) \t $mean")
+                println("$iter \t $(best.fitness) \t $(worst.fitness) \t $(median.fitness) \t $mean \t $(best.fitness - worst.fitness)")
             end
         end
 
