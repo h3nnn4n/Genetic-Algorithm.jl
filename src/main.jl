@@ -6,6 +6,9 @@ include("readFile.jl")
 
 function main(name)
     tic()
+
+    srand(666)
+
     size           = readSize(name)
     formula        = readFormula(name)
     maxIter        = 5 * 10^5
@@ -17,29 +20,32 @@ function main(name)
     yworst         = []
     ymedian        = []
     ymean          = []
-    plotInt        = 10^2
+    ydiversity     = []
+    plotInt        = 10^3
     canDraw        = true
     progress       = true
 
     while iter < maxIter
         iter += 1
-        new = roulette(population)
 
+        new   = roulette(population)
         newer = mate(new, formula)
+        diver = diversity(newer)
 
         best, worst, median, mean = getBestWorstMedianMean(newer)
 
-        if iter % plotInt == 0 || best.fitness == 1.0
+        if iter % plotInt == 0 || best.fitness == 1.0 || ( iter < plotInt && iter % div(plotInt, 10) == 0 ) || iter == 1
             if canDraw
-                push!(x       , iter           )
-                push!(ybest   , best.fitness   )
-                push!(yworst  , worst.fitness  )
-                push!(ymedian , median.fitness )
-                push!(ymean   , mean           )
+                push!(x         , iter           )
+                push!(ybest     , best.fitness   )
+                push!(yworst    , worst.fitness  )
+                push!(ymedian   , median.fitness )
+                push!(ymean     , mean           )
+                push!(ydiversity, diver          )
             end
 
             if progress
-                println("$iter \t $(best.fitness) \t $(worst.fitness) \t $(median.fitness) \t $mean \t $(best.fitness - worst.fitness)")
+                println("$iter \t $(best.fitness) \t $(worst.fitness) \t $(median.fitness) \t $mean \t $(best.fitness - worst.fitness) \t $diver")
             end
         end
 
@@ -77,6 +83,13 @@ function main(name)
             Theme(background_color=colorant"white"),
             Guide.xlabel("Time"),
             Guide.ylabel("Mean"),
+            Guide.title("Genetic Algorithm for 3cnf-sat"))
+            )
+        draw(PNG("out_diversity.png", 800px, 600px),
+            plot(x = x, y = ydiversity, Geom.line,
+            Theme(background_color=colorant"white"),
+            Guide.xlabel("Time"),
+            Guide.ylabel("Diversity"),
             Guide.title("Genetic Algorithm for 3cnf-sat"))
             )
     end
