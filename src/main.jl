@@ -4,39 +4,33 @@ include("ga.jl")
 include("cnf.jl")
 include("readFile.jl")
 
-function main(name)
+function main(name, hascancer=false)
     tic()
 
     srand(666)
 
-    size           = readSize(name)
-    formula        = readFormula(name)
-    maxIter        = 5 * 10^5
-    iter           = 0
-    populationSize = 100
-    population     = spawnPop(populationSize, size, formula)
-    x              = []
-    ybest          = []
-    yworst         = []
-    ymedian        = []
-    ymean          = []
-    ydiversity     = []
-    plotInt        = 10^3
-    canDraw        = true
-    progress       = true
+    size            = readSize(name)
+    formula         = readFormula(name)
+    maxIter         = 1 * 10^4
+    iter            = 0
+    populationSize  = 100
+    population      = spawnPop(populationSize, size, formula)
+    x               = []
+    ybest           = []
+    yworst          = []
+    ymedian         = []
+    ymean           = []
+    ydiversity      = []
+    plotInt         = 10^2
+    canDraw         = true
+    progress        = true
+    crossoverChance = 0.95
 
     while iter < maxIter
         iter += 1
 
         new   = roulette(population)
-
-        if rand() < 0.01
-            #=println("CANCER!!!")=#
-            p = rand(1:populationSize)
-            population[p] = cancer(population[p], formula)
-        end
-
-        newer = mate(new, formula)
+        newer = mate(new, formula, crossoverChance)
         diver = diversity(newer)
 
         best, worst, median, mean = getBestWorstMedianMean(newer)
@@ -52,7 +46,7 @@ function main(name)
             end
 
             if progress
-                println("$iter \t $(best.fitness) \t $(worst.fitness) \t $(median.fitness) \t $mean \t $(best.fitness - worst.fitness) \t $diver")
+                println("$iter \t $(length(population)) \t $(best.fitness) \t $(worst.fitness) \t $(median.fitness) \t $mean \t $(best.fitness - worst.fitness) \t $diver")
             end
         end
 
