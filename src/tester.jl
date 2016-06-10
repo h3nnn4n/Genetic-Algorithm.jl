@@ -1,6 +1,7 @@
 include("main.jl")
 
 Base.(:+)(x :: Tuple{Int64,Float64,Bool}, y :: Tuple{Int64,Float64,Bool}) = (x[1] + y[1], x[2] + y[2], x[3] + y[3])
+Base.(:+)(x :: Tuple{Int64,Float64,Int64}, y :: Tuple{Int64,Float64,Bool}) = (x[1] + y[1], x[2] + y[2], x[3] + y[3])
 
 function tester()
     n     = nworkers()
@@ -10,8 +11,8 @@ function tester()
     for file in files
         name = split(splitext(file)[1], '-')[1]
         if name == "uf20"
-            print("$file \t")
-            info = main(file)
+            println("$file \t")
+            info = sum([main(file) for i in 1:10])
             println(info)
             write(out, "$file $info\n")
             flush(out)
