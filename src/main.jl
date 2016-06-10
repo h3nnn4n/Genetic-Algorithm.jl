@@ -92,5 +92,7 @@ function main(name)
             )
     end
 
-    return iter == maxIter ? (iter, toq(), false) : (iter, toq(), true)
+    r = iter == maxIter ? (iter, toq(), false) : (iter, toq(), true)
+    println(r)
+    return r
 end
