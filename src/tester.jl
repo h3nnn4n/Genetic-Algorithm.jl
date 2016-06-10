@@ -4,8 +4,6 @@ Base.(:+)(x :: Tuple{Int64,Float64,Bool}, y :: Tuple{Int64,Float64,Bool}) = (x[1
 Base.(:+)(x :: Tuple{Int64,Float64,Int64}, y :: Tuple{Int64,Float64,Bool}) = (x[1] + y[1], x[2] + y[2], x[3] + y[3])
 
 function tester()
-    n   = nworkers()
-    t   = 10
     out = open("data.log", "w")
     cd("../instances")
     files = readdir()
@@ -13,8 +11,12 @@ function tester()
         name = split(splitext(file)[1], '-')[1]
         if name == "uf20"
             println("$file \t")
-            todo = [file for i in 1:t]
-            info = pmap(x -> main(x), todo)
+
+            todo = [file for i in 1:10]
+            info = sum(pmap(x -> main(x), todo))
+            info[1] = info[1]/10
+            info[2] = info[2]/10
+
             println(info)
             write(out, "$file $info\n")
             flush(out)
