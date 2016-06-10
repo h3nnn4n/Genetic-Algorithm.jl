@@ -4,11 +4,11 @@ include("ga.jl")
 include("cnf.jl")
 include("readFile.jl")
 
-function main(name, hascancer=false)
+function main(name)
     tic()
     size            = readSize(name)
     formula         = readFormula(name)
-    maxIter         = 1 * 10^4
+    maxIter         = 5 * 10^5
     iter            = 0
     populationSize  = 100
     population      = spawnPop(populationSize, size, formula)
@@ -92,5 +92,5 @@ function main(name, hascancer=false)
             )
     end
 
-    return iters == maxIter ? (iters, toq(), false) : (iters, toq(), true)
+    return iter == maxIter ? (iter, toq(), false) : (iter, toq(), true)
 end
