@@ -5,8 +5,8 @@ type Individual
     fitness :: Float64
 end
 
-+(x :: Individual, y :: Individual) = (x.fitness) + (y.fitness)
-+(x :: Float64   , y :: Individual) = (x        ) + (y.fitness)
+Base.(:+)(x :: Individual, y :: Individual) = (x.fitness) + (y.fitness)
+Base.(:+)(x :: Float64   , y :: Individual) = (x        ) + (y.fitness)
 
 Base.isless(x :: Individual, y :: Individual) = (x.fitness) < (y.fitness)
 
@@ -30,13 +30,6 @@ function diversity(pop)
         t += 1
     end
     return d / t
-end
-
-function cancer(a, formula)
-    for i in 1:length(a.genes)
-        a.genes[i] = rand() < 0.5 ? !a.genes[i] : a.genes[i]
-    end
-    a.fitness = fitness(a.genes, formula)
 end
 
 function roulette(pop)
@@ -79,11 +72,11 @@ function getBestWorstMedianMean(pop)
     return p[end], p[1], p[div(end, 2)], sum(p)/length(p)
 end
 
-function mate(pop, formula)
+function mate(pop, formula, crossoverChance)
     for i in 1:length(pop)/2
         a = rand(1:length(pop))
         b = rand(1:length(pop))
-        if rand() < 0.9
+        if rand() < crossoverChance
             u, v = crossover(pop[a], pop[b], formula)
             pop[a] = u
             pop[b] = v
