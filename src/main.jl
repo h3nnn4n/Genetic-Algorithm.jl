@@ -6,9 +6,6 @@ include("readFile.jl")
 
 function main(name, hascancer=false)
     tic()
-
-    srand(666)
-
     size            = readSize(name)
     formula         = readFormula(name)
     maxIter         = 1 * 10^4
@@ -22,8 +19,8 @@ function main(name, hascancer=false)
     ymean           = []
     ydiversity      = []
     plotInt         = 10^2
-    canDraw         = true
-    progress        = true
+    canDraw         = false
+    progress        = false
     crossoverChance = 0.95
 
     while iter < maxIter
@@ -94,4 +91,6 @@ function main(name, hascancer=false)
             Guide.title("Genetic Algorithm for 3cnf-sat"))
             )
     end
+
+    return iters == maxIter ? (iters, toq(), false) : (iters, toq(), true)
 end
