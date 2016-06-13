@@ -12,13 +12,13 @@ function tester()
         if name == "uf20"
             println("$file \t")
 
-            todo = [file for i in 1:10]
-            info = sum(pmap(x -> main(x), todo))
-            info[1] = info[1]/10
-            info[2] = info[2]/10
+            todo  = [file for i in 1:10]
+            inf   = (pmap(x -> main(x), todo))
+            info  = sum(inf)
+            info2 = (info[1]/10, info[2]/10, info[3])
 
             println(info)
-            write(out, "$file $info\n")
+            write(out, "$file $inf $info2\n")
             flush(out)
         end
     end

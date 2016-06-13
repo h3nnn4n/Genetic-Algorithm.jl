@@ -73,6 +73,7 @@ function getBestWorstMedianMean(pop)
 end
 
 function mate(pop, formula, crossoverChance)
+    evalsSpent = 0
     for i in 1:length(pop)/2
         a = rand(1:length(pop))
         b = rand(1:length(pop))
@@ -80,15 +81,17 @@ function mate(pop, formula, crossoverChance)
             u, v = crossover(pop[a], pop[b], formula)
             pop[a] = u
             pop[b] = v
+            evalsSpent += 1
         end
     end
 
-    return pop
+    return evalsSpent, pop
 end
 
 function mutate(a)
+    λ = (1/length(a.genes))
     p = rand(1:length(a.genes))
-    a.genes[p] = rand() < (1/length(a.genes)) ? !a.genes[p] : a.genes[p]
+    a.genes[p] = rand() < λ ? !a.genes[p] : a.genes[p]
     return a
 end
 

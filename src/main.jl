@@ -9,6 +9,7 @@ function main(name)
     size            = readSize(name)
     formula         = readFormula(name)
     maxIter         = 5 * 10^5
+    evaluationsLeft = maxIter
     iter            = 0
     populationSize  = 100
     population      = spawnPop(populationSize, size, formula)
@@ -19,20 +20,25 @@ function main(name)
     ymean           = []
     ydiversity      = []
     plotInt         = 10^2
-    canDraw         = false
-    progress        = false
-    crossoverChance = 0.95
+    canDraw         = true
+    progress        = true
+    crossoverChance = 0.80
+
+    evaluationsLeft -= populationSize
 
     while iter < maxIter
-        iter += 1
+        #=iter += 1=#
+        iter = maxIter - evaluationsLeft
 
-        new   = roulette(population)
-        newer = mate(new, formula, crossoverChance)
-        diver = diversity(newer)
+        new               = roulette(population)
+        evalsSpent, newer = mate(new, formula, crossoverChance)
+        diver             = diversity(newer)
+
+        evaluationsLeft -= evalsSpent
 
         best, worst, median, mean = getBestWorstMedianMean(newer)
 
-        if iter % plotInt == 0 || best.fitness == 1.0 || ( iter < plotInt && iter % div(plotInt, 10) == 0 ) || iter == 1
+        if iter % plotInt == 0 || best.fitness == 1.0
             if canDraw
                 push!(x         , iter           )
                 push!(ybest     , best.fitness   )
@@ -92,7 +98,7 @@ function main(name)
             )
     end
 
-    r = iter == maxIter ? (iter, toq(), false) : (iter, toq(), true)
+    r = iter >= maxIter ? (iter, toq(), false) : (iter, toq(), true)
     println(r)
     return r
 end
