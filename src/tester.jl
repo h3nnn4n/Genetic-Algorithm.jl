@@ -28,50 +28,73 @@ function tester()
     close(out)
 end
 
-function evalmChance()
-    m = 500
+function ninja()
+    mmin  = 0.05
+    mmax  = 1.00
+    iters = 19
 
-    out = open("mChange.log", "w")
+    for i in 0:iters
+        crossoverChance = (mmax - mmin)*(i/iters) + mmin
+        println("\n $crossoverChance \n---------")
+        evalmChance(crossoverChance)
+    end
 
+end
+
+function evalmChance(crossoverChance = 0.95)
+    m     = 25
+    out   = open("mChange" + crossoverChance + ".log", "w")
     x     = []
-    ytime = []
     yiter = []
-    ysolv = []
+    ytime = []
+    mmin  = 0.01
+    mmax  = 1.00
+    iters = 100
 
-    for i in 1:200
-        mChance = i/1000
-        w = sum(pmap(x -> main(x, mChance, 0.95), ["../instances/uf20-01.cnf" for j in 1:m]))
+    for i in 1:iters
+        mChance = (mmax - mmin)*(i/iters) + mmin
+        w = sum(pmap(x -> main(x, mChance, crossoverChance), ["../instances/uf20-01.cnf" for j in 1:m]))
         push!(x    , mChance)
         push!(yiter, w[1]/m)
         push!(ytime, w[2]/m)
-        push!(ysolv, w[3]/m)
 
-        println("$mChance $w")
+        println("$mChance $(w[1]/m) $(w[2]/m) $(w[3])")
         write(out, "$mChance $w\n")
         flush(out)
     end
 
     close(out)
 
-    draw(PNG("out_iter.png", 800px, 600px),
-        plot(x = x, y = yiter, Geom.line,
-        Theme(background_color=colorant"white"),
-        Guide.xlabel("Mutation Chance"),
-        Guide.ylabel("Iterations"),
-        Guide.title("Genetic Algorithm for 3cnf-sat"))
+    #=out = open("mChange_iter.log", "w"); write(out, "$yiter"); close(out)=#
+    #=out = open("mChange_time.log", "w"); write(out, "$ytime"); close(out)=#
+    #=out = open("mChange_x.log", "w");    write(out, "$x");     close(out)=#
+
+    draw(PNG("out_time" + crossoverChance + ".png", 800px, 600px),
+        plot(
+            layer( x = x, y = ytime,
+                Geom.point, Geom.line,   Theme(default_color=colorant"orange")
+            ),
+            layer( x = x, y = ytime,
+                Geom.point, Geom.smooth, Theme(default_color=colorant"purple")
+            ),
+            Theme(background_color=colorant"white"),
+            Guide.xlabel("Mutation Chance"),
+            Guide.ylabel("Time"),
+            Guide.title("Genetic Algorithm for 3cnf-sat")
         )
-    draw(PNG("out_time.png", 800px, 600px),
-        plot(x = x, y = ytime, Geom.line,
-        Theme(background_color=colorant"white"),
-        Guide.xlabel("Mutation Chance"),
-        Guide.ylabel("Time"),
-        Guide.title("Genetic Algorithm for 3cnf-sat"))
+    )
+    draw(PNG("out_iter" + crossoverChance + ".png", 800px, 600px),
+        plot(
+            layer( x = x, y = yiter,
+                Geom.point, Geom.line,   Theme(default_color=colorant"orange")
+            ),
+            layer( x = x, y = yiter,
+                Geom.point, Geom.smooth, Theme(default_color=colorant"purple")
+            ),
+            Theme(background_color=colorant"white"),
+            Guide.xlabel("Mutation Chance"),
+            Guide.ylabel("Iterations"),
+            Guide.title("Genetic Algorithm for 3cnf-sat")
         )
-    draw(PNG("out_solv.png", 800px, 600px),
-        plot(x = x, y = ysolv, Geom.line,
-        Theme(background_color=colorant"white"),
-        Guide.xlabel("Mutation Chance"),
-        Guide.ylabel("Solved"),
-        Guide.title("Genetic Algorithm for 3cnf-sat"))
-        )
+    )
 end

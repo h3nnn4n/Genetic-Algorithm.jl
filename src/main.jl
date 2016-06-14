@@ -22,8 +22,8 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
     plotInt         = 10^5
     canDraw         = false
     progress        = false
-    crossoverChance = 0.95
-    mChance         = 0.1
+    #=crossoverChance = 0.95=#
+    #=mChance         = 0.1=#
 
     evaluationsLeft -= populationSize
 
