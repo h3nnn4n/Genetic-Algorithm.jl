@@ -4,14 +4,14 @@ include("ga.jl")
 include("cnf.jl")
 include("readFile.jl")
 
-function main(name)
+function main(name, mChance = 0.3, crossoverChance = 0.8)
     tic()
     size            = readSize(name)
     formula         = readFormula(name)
     maxIter         = 5 * 10^5
     evaluationsLeft = maxIter
     iter            = 0
-    populationSize  = 100
+    populationSize  = 25
     population      = spawnPop(populationSize, size, formula)
     x               = []
     ybest           = []
@@ -19,10 +19,11 @@ function main(name)
     ymedian         = []
     ymean           = []
     ydiversity      = []
-    plotInt         = 10^2
-    canDraw         = true
-    progress        = true
-    crossoverChance = 0.80
+    plotInt         = 10^5
+    canDraw         = false
+    progress        = false
+    crossoverChance = 0.95
+    mChance         = 0.1
 
     evaluationsLeft -= populationSize
 
@@ -31,7 +32,7 @@ function main(name)
         iter = maxIter - evaluationsLeft
 
         new               = roulette(population)
-        evalsSpent, newer = mate(new, formula, crossoverChance)
+        evalsSpent, newer = mate(new, formula, crossoverChance, mChance)
         diver             = diversity(newer)
 
         evaluationsLeft -= evalsSpent
@@ -99,6 +100,8 @@ function main(name)
     end
 
     r = iter >= maxIter ? (iter, toq(), false) : (iter, toq(), true)
-    println(r)
+    if progress
+        println(r)
+    end
     return r
 end

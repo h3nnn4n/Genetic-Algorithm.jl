@@ -72,13 +72,13 @@ function getBestWorstMedianMean(pop)
     return p[end], p[1], p[div(end, 2)], sum(p)/length(p)
 end
 
-function mate(pop, formula, crossoverChance)
+function mate(pop, formula, crossoverChance, mChance)
     evalsSpent = 0
     for i in 1:length(pop)/2
         a = rand(1:length(pop))
         b = rand(1:length(pop))
         if rand() < crossoverChance
-            u, v = crossover(pop[a], pop[b], formula)
+            u, v = crossover(pop[a], pop[b], formula, mChance)
             pop[a] = u
             pop[b] = v
             evalsSpent += 1
@@ -88,21 +88,20 @@ function mate(pop, formula, crossoverChance)
     return evalsSpent, pop
 end
 
-function mutate(a)
-    λ = (1/length(a.genes))
+function mutate(a, mChance)
     p = rand(1:length(a.genes))
-    a.genes[p] = rand() < λ ? !a.genes[p] : a.genes[p]
+    a.genes[p] = rand() < mChance ? !a.genes[p] : a.genes[p]
     return a
 end
 
-function crossover(a, b, formula)
+function crossover(a, b, formula, mChance)
     p = rand(1:length(a.genes))
 
     g1 = vcat(a.genes[1:p], b.genes[p+1:end])
     g2 = vcat(b.genes[1:p], a.genes[p+1:end])
 
-    u = mutate(Individual(g1, fitness(g1, formula)))
-    v = mutate(Individual(g2, fitness(g2, formula)))
+    u = mutate(Individual(g1, fitness(g1, formula)), mChance)
+    v = mutate(Individual(g2, fitness(g2, formula)), mChance)
 
     return u, v
 end
