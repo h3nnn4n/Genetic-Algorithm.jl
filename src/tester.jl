@@ -40,14 +40,14 @@ function evalmChanceVersusCrossovercance()
     mutation_mmax  = 1.00
     mutation_iters = 32
 
-    m = 10
+    m = 50
 
     for i in 0:mutation_iters
         mChance         = (mutation_mmax  - mutation_mmin ) * (i/mutation_iters ) + mutation_mmin
         write(out, "$mChance")
         print("$mChance")
         for j in 0:crossover_iters
-            crossoverChance = (crossover_mmax - crossover_mmin) * (i/crossover_iters) + crossover_mmin
+            crossoverChance = (crossover_mmax - crossover_mmin) * (j/crossover_iters) + crossover_mmin
 
             w = sum(pmap(x -> main(x, mChance, crossoverChance), ["../instances/uf20-01.cnf" for j in 1:m]))
 
