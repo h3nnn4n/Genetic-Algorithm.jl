@@ -78,6 +78,14 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
                 if progress
                     println("$iter \t $(length(population)) \t $(best.fitness) \t $(worst.fitness) \t $(median.fitness) \t $mean \t $(best.fitness - worst.fitness) \t $diver")
                 end
+                if canDraw
+                    push!(x         , iter           )
+                    push!(ybest     , best.fitness   )
+                    push!(yworst    , worst.fitness  )
+                    push!(ymedian   , median.fitness )
+                    push!(ymean     , mean           )
+                    push!(ydiversity, diver          )
+                end
             else
                 diver_counter = 0
             end
