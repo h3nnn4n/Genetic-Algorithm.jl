@@ -20,12 +20,14 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
     ymedian         = []
     ymean           = []
     ydiversity      = []
-    plotInt         = 10^3
+    plotInt         = 10^4
     canDraw         = true
     progress        = true
     old_diver       = 0
     diver_counter   = 0
     diver           = 0
+    elitism         = true
+    oldBest         = population[1]
 
     evaluationsLeft -= populationSize
 
@@ -33,13 +35,26 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
         iter      = maxIter - evaluationsLeft
         old_diver = diver
 
-        new               = roulette(population)
-        evalsSpent, newer = mate(new, formula, crossoverChance, mChance)
-        diver             = diversity(newer)
+        if elitism
+            elite = getBest(population)
+        end
 
-        evaluationsLeft -= evalsSpent
+        new                = roulette(population)
+        evalsSpent, newish = mate(new, formula, crossoverChance)
+        newer              = map( x -> mutate(x, mChance, formula), newish)
+        diver              = diversity(newer)
+
+        evaluationsLeft   -= ( evalsSpent + populationSize )
 
         best, worst, median, mean = getBestWorstMedianMean(newer)
+        if elitism && best.fitness > elite.fitness
+            elite = best
+        end
+
+        if elitism
+            newer[1] = elite
+            best = getBest(newer)
+        end
 
         if iter - old_iter > plotInt || best.fitness == 1.0
             old_iter = iter
@@ -60,6 +75,9 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
         if old_diver == 0
             if diver == 0
                 diver_counter += 1
+                if progress
+                    println("$iter \t $(length(population)) \t $(best.fitness) \t $(worst.fitness) \t $(median.fitness) \t $mean \t $(best.fitness - worst.fitness) \t $diver")
+                end
             else
                 diver_counter = 0
             end

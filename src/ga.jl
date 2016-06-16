@@ -25,24 +25,21 @@ hamming(x, y) = sum([ x[i] != y[i] for i in 1:length(x)])
 
 function diversity(pop)
     d, t = 0, 0
-    for i in 1:length(pop), j in 1:i-1
+    for i in 2:length(pop), j in 1:i-1
         d += hamming(pop[i].genes, pop[j].genes)
         t += 1
+
+        if hamming(pop[i].genes, pop[j].genes) == 0 && pop[i].fitness != pop[j].fitness
+            println("\n$(pop[i])\n$(pop[j])")
+        end
     end
     return d / t
 end
 
 function roulette(pop)
-    total   = sum( pop )
-    newpop  = []
-    elitism = true
-
-    if elitism
-        max = length(pop) - 1
-        push!(newpop, getBest(pop))
-    else
-        max = length(pop)
-    end
+    total  = sum( pop )
+    newpop = []
+    max    = length(pop)
 
     for w in 1:max
         i, p, r = 0, 0, rand()
@@ -72,36 +69,37 @@ function getBestWorstMedianMean(pop)
     return p[end], p[1], p[div(end, 2)], sum(p)/length(p)
 end
 
-function mate(pop, formula, crossoverChance, mChance)
+function mate(pop, formula, crossoverChance)
     evalsSpent = 0
     for i in 1:length(pop)/2
         a = rand(1:length(pop))
         b = rand(1:length(pop))
         if rand() < crossoverChance
-            u, v = crossover(pop[a], pop[b], formula, mChance)
+            u, v = crossover(pop[a], pop[b], formula)
             pop[a] = u
             pop[b] = v
-            evalsSpent += 1
+            evalsSpent += 2
         end
     end
 
     return evalsSpent, pop
 end
 
-function mutate(a, mChance)
-    p = rand(1:length(a.genes))
-    a.genes[p] = rand() < mChance ? !a.genes[p] : a.genes[p]
-    return a
+function mutate(b, mChance, formula)
+    a = copy(b.genes)
+    p = rand(1:length(a))
+    a[p] = rand() < mChance ? !a[p] : a[p]
+    return Individual(a, fitness(a, formula))
 end
 
-function crossover(a, b, formula, mChance)
+function crossover(a, b, formula)
     p = rand(1:length(a.genes))
 
     g1 = vcat(a.genes[1:p], b.genes[p+1:end])
     g2 = vcat(b.genes[1:p], a.genes[p+1:end])
 
-    u = mutate(Individual(g1, fitness(g1, formula)), mChance)
-    v = mutate(Individual(g2, fitness(g2, formula)), mChance)
+    u = Individual(g1, fitness(g1, formula))
+    v = Individual(g2, fitness(g2, formula))
 
     return u, v
 end
