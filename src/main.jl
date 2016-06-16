@@ -11,6 +11,7 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
     maxIter         = 5 * 10^5
     evaluationsLeft = maxIter
     iter            = 0
+    old_iter        = iter
     populationSize  = 25
     population      = spawnPop(populationSize, size, formula)
     x               = []
@@ -19,17 +20,18 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
     ymedian         = []
     ymean           = []
     ydiversity      = []
-    plotInt         = 10^5
-    canDraw         = false
-    progress        = false
-    #=crossoverChance = 0.95=#
-    #=mChance         = 0.1=#
+    plotInt         = 10^3
+    canDraw         = true
+    progress        = true
+    old_diver       = 0
+    diver_counter   = 0
+    diver           = 0
 
     evaluationsLeft -= populationSize
 
     while iter < maxIter
-        #=iter += 1=#
-        iter = maxIter - evaluationsLeft
+        iter      = maxIter - evaluationsLeft
+        old_diver = diver
 
         new               = roulette(population)
         evalsSpent, newer = mate(new, formula, crossoverChance, mChance)
@@ -39,7 +41,8 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
 
         best, worst, median, mean = getBestWorstMedianMean(newer)
 
-        if iter % plotInt == 0 || best.fitness == 1.0
+        if iter - old_iter > plotInt || best.fitness == 1.0
+            old_iter = iter
             if canDraw
                 push!(x         , iter           )
                 push!(ybest     , best.fitness   )
@@ -54,14 +57,25 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
             end
         end
 
+        if old_diver == 0
+            if diver == 0
+                diver_counter += 1
+            else
+                diver_counter = 0
+            end
+        end
+
         if best.fitness == 1.0
+            break
+        elseif diver_counter >= 10
+            iter = maxIter
             break
         end
 
         population = newer
     end
 
-    if canDraw
+    if canDraw && length(x) > 0
         draw(PNG("out_best.png", 800px, 600px),
             plot(x = x, y = ybest, Geom.line,
             Theme(background_color=colorant"white"),
