@@ -140,7 +140,7 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
             )
     end
 
-    r = iter >= maxIter ? (gen, toq(), false) : (gen, toq(), true)
+    r = iter >= maxIter ? (iter, toq(), false) : (iter, toq(), true)
     if progress
         println(r)
     end
