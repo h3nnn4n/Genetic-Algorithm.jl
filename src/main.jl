@@ -12,7 +12,8 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
     evaluationsLeft = maxIter
     iter            = 0
     old_iter        = iter
-    populationSize  = 25
+    old_iter_prog   = iter
+    populationSize  = 20
     population      = spawnPop(populationSize, size, formula)
     x               = []
     ybest           = []
@@ -20,18 +21,21 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
     ymedian         = []
     ymean           = []
     ydiversity      = []
-    plotInt         = 10^4
-    canDraw         = true
-    progress        = true
+    plotInt         = 10^2
+    progressInt     = 10^2
+    canDraw         = false
+    progress        = false
     old_diver       = 0
     diver_counter   = 0
     diver           = 0
     elitism         = true
     oldBest         = population[1]
+    gen             = 0
 
     evaluationsLeft -= populationSize
 
     while iter < maxIter
+        gen += 1
         iter      = maxIter - evaluationsLeft
         old_diver = diver
 
@@ -56,30 +60,27 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
             best = getBest(newer)
         end
 
-        if iter - old_iter > plotInt || best.fitness == 1.0
-            old_iter = iter
-            if canDraw
-                push!(x         , iter           )
-                push!(ybest     , best.fitness   )
-                push!(yworst    , worst.fitness  )
-                push!(ymedian   , median.fitness )
-                push!(ymean     , mean           )
-                push!(ydiversity, diver          )
-            end
+        if canDraw && ( gen % plotInt == 0 || gen == 1 || best.fitness == 1.0 || iter >= maxIter )
+            push!(x         , gen            )
+            push!(ybest     , best.fitness   )
+            push!(yworst    , worst.fitness  )
+            push!(ymedian   , median.fitness )
+            push!(ymean     , mean           )
+            push!(ydiversity, diver          )
+        end
 
-            if progress
-                println("$iter \t $(length(population)) \t $(best.fitness) \t $(worst.fitness) \t $(median.fitness) \t $mean \t $(best.fitness - worst.fitness) \t $diver")
-            end
+        if progress && ( gen % progressInt == 0 || gen == 1 || iter >= maxIter || best.fitness == 1.0 )
+                @printf("%5d %7d %.6f %.6f %.6f %.6f %.6f %.6f \n", gen, iter, best.fitness, worst.fitness, median.fitness, mean, best.fitness - worst.fitness, diver)
         end
 
         if old_diver == 0
             if diver == 0
                 diver_counter += 1
                 if progress
-                    println("$iter \t $(length(population)) \t $(best.fitness) \t $(worst.fitness) \t $(median.fitness) \t $mean \t $(best.fitness - worst.fitness) \t $diver")
+                    @printf("%5d %7d %.6f %.6f %.6f %.6f %.6f %.6f \n", gen, iter, best.fitness, worst.fitness, median.fitness, mean, best.fitness - worst.fitness, diver)
                 end
                 if canDraw
-                    push!(x         , iter           )
+                    push!(x         , gen           )
                     push!(ybest     , best.fitness   )
                     push!(yworst    , worst.fitness  )
                     push!(ymedian   , median.fitness )
@@ -139,7 +140,7 @@ function main(name, mChance = 0.3, crossoverChance = 0.8)
             )
     end
 
-    r = iter >= maxIter ? (iter, toq(), false) : (iter, toq(), true)
+    r = iter >= maxIter ? (gen, toq(), false) : (gen, toq(), true)
     if progress
         println(r)
     end
