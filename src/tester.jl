@@ -62,32 +62,56 @@ function evalmChanceVersusCrossovercance()
     close(out)
 end
 
-function evalmChance(crossoverChance = 0.95)
-    m     = 10
-    name  = @sprintf "out_iter_%.4f.png" crossoverChance
+function hue()
+    instances = ["../instances/uf20-01.cnf",
+                 "../instances/uf50-01.cnf",
+                 "../instances/uf20-0103.cnf",
+                 "../instances/uf20-0106.cnf",
+                 "../instances/uf20-0420.cnf",
+                 "../instances/uf20-0851.cnf",
+                 "../instances/uf50-084.cnf",
+                 "../instances/uf75-01.cnf",
+                 "../instances/uf100-01.cnf",
+                 "../instances/uf250-01.cnf",
+                 "../instances/uf75-029.cnf"]
+
+    crossoverChances = [i/10.0 for i in 10:-1:0]
+
+    for i in crossoverChances, j in instances
+        println("$i $j")
+        evalmChance(j, i)
+    end
+end
+
+function evalmChance(targetName, crossoverChance = 0.95)
+    name  = @sprintf("out_iter_%s_%.4f.png", splitext(basename(targetName))[1], crossoverChance)
+    println(name)
     out   = open(name, "w")
     x     = []
     yiter = []
     ytime = []
-    mmin  = 0.01
-    mmax  = 1.00
-    iters = 32
 
-    for i in 1:iters
-        mChance = (mmax - mmin)*(i/iters) + mmin
-        w = sum(pmap(x -> main(x, mChance, crossoverChance), ["../instances/uf20-01.cnf" for j in 1:m]))
+    m     = 26
+
+    mutation_mmin  = 0.00
+    mutation_mmax  = 1.00
+    mutation_iters = 20
+
+    for i in 0:mutation_iters
+        mChance = (mutation_mmax  - mutation_mmin ) * (i/mutation_iters ) + mutation_mmin
+        w = sum(pmap(x -> main(x, mChance, crossoverChance), [targetName for j in 1:m]))
         push!(x    , mChance)
         push!(yiter, w[1]/m)
         push!(ytime, w[2]/m)
 
         println("$mChance $(w[1]/m) $(w[2]/m) $(w[3])")
-        write(out, "$mChance $w\n")
+        write(out, "$mChance $(w[1])\n")
         flush(out)
     end
 
     close(out)
 
-    name = @sprintf "out_time_%.4f.png" crossoverChance
+    name  = @sprintf("out_time_%s_%.4f.png", splitext(basename(targetName))[1], crossoverChance)
     draw(PNG(name, 800px, 600px),
         plot(
             layer( x = x, y = ytime,
@@ -102,7 +126,7 @@ function evalmChance(crossoverChance = 0.95)
             Guide.title("Genetic Algorithm for 3cnf-sat")
         )
     )
-    name = @sprintf "out_iter_%.4f.png" crossoverChance
+    name  = @sprintf("out_iter_%s_%.4f.png", splitext(basename(targetName))[1], crossoverChance)
     draw(PNG(name, 800px, 600px),
         plot(
             layer( x = x, y = yiter,
