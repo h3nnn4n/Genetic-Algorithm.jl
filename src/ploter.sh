@@ -34,10 +34,12 @@ set key top left
 set xlabel 'Mutation Chance'
 set ylabel 'Iterations'
 
-plot    'data_crossover_versus_mutation.log'      using 1:2 title '0.25 crossover chance'   with lines ls 1, \
-        'data_crossover_versus_mutation.log'      using 1:3 title '0.50 crossover chance'   with lines ls 2, \
-        'data_crossover_versus_mutation.log'      using 1:4 title '0.75 crossover chance'   with lines ls 3, \
-        'data_crossover_versus_mutation.log'      using 1:5 title '1.00 crossover chance'   with lines ls 4 #, \
+plot    'data_crossover_versus_mutation.log'      using 1:2 title '0.00 crossover chance'   with linespoints ls 1, \
+        'data_crossover_versus_mutation.log'      using 1:3 title '0.20 crossover chance'   with linespoints ls 2, \
+        'data_crossover_versus_mutation.log'      using 1:4 title '0.40 crossover chance'   with linespoints ls 3, \
+        'data_crossover_versus_mutation.log'      using 1:5 title '0.60 crossover chance'   with linespoints ls 4, \
+        'data_crossover_versus_mutation.log'      using 1:6 title '0.80 crossover chance'   with linespoints ls 5, \
+        'data_crossover_versus_mutation.log'      using 1:7 title '1.00 crossover chance'   with linespoints ls 6 #, \
         #'data_crossover_versus_mutation.log'      using 1:2 notitle                         with lines ls 5 smooth bezier, \
         #'data_crossover_versus_mutation.log'      using 1:3 notitle                         with lines ls 6 smooth bezier, \
         #'data_crossover_versus_mutation.log'      using 1:4 notitle                         with lines ls 7 smooth bezier, \
