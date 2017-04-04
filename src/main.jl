@@ -1,6 +1,10 @@
 include("types.jl")
 include("population.jl")
 
+function fitness( ind :: _individual )
+    return 0.0
+end
+
 function main()
     pop = spawn_empty_population()
     pop.size = 10
@@ -22,12 +26,15 @@ function main()
 
     init_population(pop)
 
-    #=for i in 1:pop.size=#
-        #=println(pop.individuals[i])=#
-    #=end=#
+    print_pop(pop)
+    println()
 
-    for iter in 1:1000
+    for iter in 1:5
+        selection(pop)
+        crossover(pop)
         mutation(pop)
+        print_pop(pop)
+        println()
     end
 
     return
