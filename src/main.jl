@@ -2,7 +2,14 @@ include("types.jl")
 include("population.jl")
 
 function fitness( ind :: _individual )
-    return 0.0
+    fit = 0 :: Int64
+    for i in 2:ind.n_genes
+        if (ind.genetic_code[i].value % 2) != (ind.genetic_code[i - 1].value % 2)
+            fit += 1
+        end
+    end
+
+    ind.fitness = fit
 end
 
 function main()
@@ -26,15 +33,15 @@ function main()
 
     init_population(pop)
 
-    print_pop(pop)
-    println()
-
     for iter in 1:5
+        evaluate(pop, fitness)
+
+        print_pop(pop)
+        println()
+
         selection(pop)
         crossover(pop)
         mutation(pop)
-        print_pop(pop)
-        println()
     end
 
     return

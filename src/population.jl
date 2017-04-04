@@ -20,6 +20,12 @@ function init_population( pop :: _population )
     end
 end
 
+function evaluate( pop :: _population, f )
+    for i in 1:pop.size
+        f(pop.individuals[i])
+    end
+end
+
 function selection_roulette( pop :: _population )
     throw("Not implemented")
 end
@@ -30,7 +36,7 @@ function selection_ktourney( pop :: _population, k )
         best_i = rand(1:pop.size)
         for _ in 1:k
             n = rand(1:pop.size)
-            if pop.individuals[best_i].fitness < pop.individuals[n]
+            if pop.individuals[best_i].fitness < pop.individuals[n].fitness
                 best_i = n
             end
         end
@@ -132,6 +138,6 @@ function print_pop( pop :: _population )
         for j in 1:pop.n_genes
             print("$(pop.individuals[i].genetic_code[j].value) ")
         end
-        println()
+        println(" = $(pop.individuals[i].fitness)")
     end
 end
