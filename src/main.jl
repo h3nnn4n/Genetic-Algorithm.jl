@@ -1,6 +1,29 @@
 include("types.jl")
 include("population.jl")
 
+# Done:
+# k-elitism
+#
+# Xovers:
+# - Uniform xover (bin, int, real)
+# - 1-point xover (bin, int, real)
+#
+# Mutation:
+# - bit-flip (bin)
+# - delta, gaussian (real)
+# - delta, gaussian (int)
+#
+# Selection:
+# - k-tourney
+# - roulette
+
+# TODO
+# - Everything about permutations
+# - diversity plot
+# - BLX (real)
+# - PMX, CX (xover, permut)
+# - 2swap (permut)
+
 function fitness_alternating_bit( ind :: _individual )
     fit = 0 :: Int64
     for i in 2:ind.n_genes
