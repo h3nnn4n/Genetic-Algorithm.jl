@@ -30,6 +30,24 @@ function selection_roulette( pop :: _population )
     throw("Not implemented")
 end
 
+function clone( guy :: _individual )
+    genetic_code = Array{_gene}( guy.n_genes )
+
+    for i in 1:guy.n_genes
+        genetic_code[i] = _gene(guy.genetic_code[i].is_bool,
+                                guy.genetic_code[i].is_real,
+                                guy.genetic_code[i].is_int,
+                                guy.genetic_code[i].is_permut,
+                                guy.genetic_code[i].lb,
+                                guy.genetic_code[i].ub,
+                                guy.genetic_code[i].value)
+    end
+
+    new_guy = _individual(guy.n_genes, guy.fitness, genetic_code)
+
+    return new_guy
+end
+
 function selection_ktourney( pop :: _population, k )
     new_guys = [] # :: Array{_individual, 1}
     for _ in 1:pop.size
@@ -40,7 +58,8 @@ function selection_ktourney( pop :: _population, k )
                 best_i = n
             end
         end
-        push!(new_guys, deepcopy(pop.individuals[best_i]))
+        #=push!(new_guys, deepcopy(pop.individuals[best_i]))=#
+        push!(new_guys, clone(pop.individuals[best_i]))
     end
 
     pop.individuals = new_guys
@@ -52,8 +71,10 @@ function selection( pop :: _population )
 end
 
 function crossover_one_point( pop :: _population, p1 :: Int, p2 :: Int )
-    u = deepcopy(pop.individuals[p1])
-    v = deepcopy(pop.individuals[p2])
+    #=u = deepcopy(pop.individuals[p1])=#
+    #=v = deepcopy(pop.individuals[p2])=#
+    u = clone(pop.individuals[p1])
+    v = clone(pop.individuals[p2])
 
     s = rand(2:pop.n_genes - 1)
 
@@ -67,8 +88,10 @@ function crossover_one_point( pop :: _population, p1 :: Int, p2 :: Int )
 end
 
 function crossover_uniform( pop :: _population, p1 :: Int, p2 :: Int )
-    u = deepcopy(pop.individuals[p1])
-    v = deepcopy(pop.individuals[p2])
+    #=u = deepcopy(pop.individuals[p1])=#
+    #=v = deepcopy(pop.individuals[p2])=#
+    u = clone(pop.individuals[p1])
+    v = clone(pop.individuals[p2])
 
     for i in 1:pop.n_genes
         if rand() < 0.5
