@@ -12,7 +12,7 @@ end
 
 type _individual
     n_genes :: Int
-    fitness :: Any
+    fitness :: Float32
     genetic_code :: Array{_gene, 1}
 end
 
