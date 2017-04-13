@@ -23,21 +23,12 @@ function init_population( pop :: _population )
 end
 
 function evaluate( pop :: _population )
-    a, b = 0, 0
     for i in 1:pop.size
         pop.objective_function(pop.individuals[i])
 
-        if i == 1
-            a = pop.individuals[i].obj_f
-            b = pop.individuals[i].obj_f
-        end
-
-        a = min(a, pop.individuals[i].obj_f)
-        b = max(b, pop.individuals[i].obj_f)
+        pop.min_objf = min(pop.min_objf, pop.individuals[i].obj_f)
+        pop.max_objf = max(pop.max_objf, pop.individuals[i].obj_f)
     end
-
-    pop.min_objf = min(a, pop.min_objf)
-    pop.max_objf = max(b, pop.max_objf)
 
     for i in 1:pop.size
         pop.fitness_function( pop, pop.individuals[i] )

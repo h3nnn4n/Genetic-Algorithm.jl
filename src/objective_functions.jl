@@ -44,4 +44,10 @@ function fitness_sphere( pop :: _population, ind :: _individual )
     fit = fit / (pop.max_objf - pop.min_objf)
 
     ind.fitness = 1.0 - fit
+
+    if isnan(ind.fitness)
+        println("$(pop.max_objf) $(pop.min_objf)")
+        throw("kek")
+    end
+
 end

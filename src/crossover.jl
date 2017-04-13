@@ -38,11 +38,12 @@ function crossover_blx( pop :: _population, p1 :: Int, p2 :: Int )
 
     for i in 1:pop.n_genes
         d = abs(v.genetic_code[i].value - u.genetic_code[i].value)
+
         a = min(v.genetic_code[i].value, u.genetic_code[i].value) - α * d
         b = max(v.genetic_code[i].value, u.genetic_code[i].value) + α * d
 
-        v.genetic_code[i].value = rand() * (b-a) - a
-        u.genetic_code[i].value = rand() * (b-a) - a
+        v.genetic_code[i].value = rand() * (b-a) + a
+        u.genetic_code[i].value = rand() * (b-a) + a
     end
 
     return u, v
