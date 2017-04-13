@@ -1,7 +1,9 @@
 include("types.jl")
+include("selection.jl")
+include("crossover.jl")
 
 function spawn_empty_population()
-    new_pop = _population(0, 0, 0, 0, [])
+    new_pop = _population(0, 0, 0, 0, [], 0, 0, _ -> _, _ -> _, _ -> _, _ -> _, _ -> _)
 end
 
 function init_population( pop :: _population )
@@ -20,21 +22,26 @@ function init_population( pop :: _population )
     end
 end
 
-function evaluate( pop :: _population, f )
-    a = pop.individuals[i].fitness
-    b = pop.individuals[i].fitness
-
+function evaluate( pop :: _population )
+    a, b = 0, 0
     for i in 1:pop.size
-        f(pop.individuals[i])
-        a = min(a, pop.individuals[i])
-        b = max(b, pop.individuals[i])
+        pop.objective_function(pop.individuals[i])
+
+        if i == 1
+            a = pop.individuals[i].obj_f
+            b = pop.individuals[i].obj_f
+        end
+
+        a = min(a, pop.individuals[i].obj_f)
+        b = max(b, pop.individuals[i].obj_f)
     end
 
+    pop.min_objf = min(a, pop.min_objf)
+    pop.max_objf = max(b, pop.max_objf)
 
-end
-
-function selection_roulette( pop :: _population )
-    throw("Not implemented")
+    for i in 1:pop.size
+        pop.fitness_function( pop, pop.individuals[i] )
+    end
 end
 
 function clone( guy :: _individual )
@@ -50,83 +57,17 @@ function clone( guy :: _individual )
                                 guy.genetic_code[i].value)
     end
 
-    new_guy = _individual(guy.n_genes, guy.fitness, genetic_code)
+    new_guy = _individual(guy.n_genes, guy.fitness, guy.obj_f, genetic_code)
 
     return new_guy
 end
 
-function selection_ktourney( pop :: _population, k )
-    new_guys = [] # :: Array{_individual, 1}
-    for _ in 1:pop.size
-        best_i = rand(1:pop.size)
-        for _ in 1:k
-            n = rand(1:pop.size)
-            if pop.individuals[best_i].fitness < pop.individuals[n].fitness
-                best_i = n
-            end
-        end
-        #=push!(new_guys, deepcopy(pop.individuals[best_i]))=#
-        push!(new_guys, clone(pop.individuals[best_i]))
-    end
-
-    pop.individuals = new_guys
-end
-
 function selection( pop :: _population )
-    #=pop.individuals = selection_roulette( pop )=#
-    pop.individuals = selection_ktourney( pop, 2 )
-end
-
-function crossover_one_point( pop :: _population, p1 :: Int, p2 :: Int )
-    u = clone(pop.individuals[p1])
-    v = clone(pop.individuals[p2])
-
-    s = rand(2:pop.n_genes - 1)
-
-    for i in s:pop.n_genes
-        a = u.genetic_code[i]
-        u.genetic_code[i] = v.genetic_code[i]
-        v.genetic_code[i] = a
-    end
-
-    return u, v
-end
-
-function crossover_uniform( pop :: _population, p1 :: Int, p2 :: Int )
-    u = clone(pop.individuals[p1])
-    v = clone(pop.individuals[p2])
-
-    for i in 1:pop.n_genes
-        if rand() < 0.5
-            a = u.genetic_code[i]
-            u.genetic_code[i] = v.genetic_code[i]
-            v.genetic_code[i] = a
-        end
-    end
-
-    return u, v
-end
-
-function crossover_blx( pop :: _population, p1 :: Int, p2 :: Int )
-    u = clone(pop.individuals[p1])
-    v = clone(pop.individuals[p2])
-
-    α = 0.5
-
-    for i in 1:pop.n_genes
-        d = abs(v.genetic_code[i].value - u.genetic_code[i].value)
-        a = min(v.genetic_code[i].value, u.genetic_code[i].value) - α * d
-        b = max(v.genetic_code[i].value, u.genetic_code[i].value) + α * d
-
-        v.genetic_code[i].value = rand() * (b-a) - a
-        u.genetic_code[i].value = rand() * (b-a) - a
-    end
-
-    return u, v
+    pop.individuals = pop.selection_function( pop )
 end
 
 function crossover( pop :: _population )
-    new_guys = [] # :: Array{_individual, 1}
+    new_guys = []
     for i in 1:pop.size
         for j in 1:pop.n_genes
             if rand() < pop.cchance
@@ -138,19 +79,7 @@ function crossover( pop :: _population )
                     p2 = rand(1:pop.size)
                 end
 
-                if pop.individuals[i].genetic_code[j].is_bool
-                    u, v = crossover_uniform(pop, p1, p2)
-                    #=u, v = crossover_one_point(pop, p1, p2)=#
-                elseif pop.individuals[i].genetic_code[j].is_int
-                    u, v = crossover_uniform(pop, p1, p2)
-                    #=u, v = crossover_one_point(pop, p1, p2)=#
-                elseif pop.individuals[i].genetic_code[j].is_real
-                    #=u, v = crossover_uniform(pop, p1, p2)=#
-                    u, v = crossover_one_point(pop, p1, p2)
-                    #=u, v = crossover_blx(pop, p1, p2)=#
-                elseif pop.individuals[i].genetic_code[j].is_permut
-                    throw("Not implemented")
-                end
+                u, v = pop.crossover_function(pop, p1, p2)
 
                 push!(new_guys, u)
                 push!(new_guys, v)

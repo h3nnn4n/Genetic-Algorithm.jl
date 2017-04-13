@@ -11,15 +11,23 @@ type _gene
 end
 
 type _individual
-    n_genes :: Int
-    fitness :: Float32
+    n_genes  :: Int
+    fitness  :: Float32
+    obj_f    :: Float32
     genetic_code :: Array{_gene, 1}
 end
 
 type _population
-    n_genes :: Int
-    size :: Int
-    mchance :: Float32
-    cchance :: Float32
+    n_genes  :: Int
+    size     :: Int
+    mchance  :: Float32
+    cchance  :: Float32
     individuals :: Array{_individual, 1}
+    min_objf :: Float32
+    max_objf :: Float32
+    crossover_function
+    selection_function
+    mutation_function
+    objective_function
+    fitness_function
 end
