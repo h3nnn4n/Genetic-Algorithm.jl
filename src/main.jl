@@ -7,16 +7,17 @@ Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 
 function main()
     pop = spawn_empty_population()
-    pop.size = 20
+    pop.size = 40
     pop.n_genes = 10
     pop.mchance = 0.05
-    pop.cchance = 0.75
+    pop.cchance = 0.85
 
     #=pop.crossover_function = crossover_uniform=#
     #=pop.crossover_function = crossover_one_point=#
     pop.crossover_function = crossover_blx
 
-    pop.selection_function = selection_ktourney
+    #=pop.selection_function = selection_ktourney=#
+    pop.selection_function = selection_roulette
 
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
@@ -51,18 +52,19 @@ function main()
         #=print_pop(pop)=#
         #=println()=#
 
-        if iter % 100 == 0
-            #=print_pop(pop)=#
+        print_status(pop)
+        #=if iter % 1000 == 0=#
+            #=print_status(pop)=#
             #=println()=#
-            println("$iter")
-        end
+            #=println("$iter")=#
+        #=end=#
 
         selection(pop)
         crossover(pop)
         mutation(pop)
     end
 
-    print_pop(pop)
+    #=print_pop(pop)=#
     println()
 
     return

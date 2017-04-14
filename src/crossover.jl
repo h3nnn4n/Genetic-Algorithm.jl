@@ -34,7 +34,7 @@ function crossover_blx( pop :: _population, p1 :: Int, p2 :: Int )
     u = clone(pop.individuals[p1])
     v = clone(pop.individuals[p2])
 
-    α = 0.5
+    α = 0.2
 
     for i in 1:pop.n_genes
         d = abs(v.genetic_code[i].value - u.genetic_code[i].value)

@@ -60,21 +60,24 @@ end
 function crossover( pop :: _population )
     new_guys = []
     for i in 1:pop.size
-        for j in 1:pop.n_genes
-            if rand() < pop.cchance
-                p1 = rand(1:pop.size)
-                p2 = rand(1:pop.size)
+        p1 = rand(1:pop.size)
+        p2 = rand(1:pop.size)
 
-                while p1 == p2
-                    p1 = rand(1:pop.size)
-                    p2 = rand(1:pop.size)
-                end
+        while p1 == p2
+            p1 = rand(1:pop.size)
+            p2 = rand(1:pop.size)
+        end
 
-                u, v = pop.crossover_function(pop, p1, p2)
+        if rand() < pop.cchance
+            u, v = pop.crossover_function(pop, p1, p2)
 
-                push!(new_guys, u)
-                push!(new_guys, v)
-            end
+            push!(new_guys, u)
+            push!(new_guys, v)
+        else
+            u, v = clone(pop.individuals[p1]), clone(pop.individuals[p2])
+
+            push!(new_guys, u)
+            push!(new_guys, v)
         end
     end
 
@@ -96,6 +99,17 @@ function mutation( pop :: _population )
                 elseif pop.individuals[i].genetic_code[j].is_permut
                     throw("Not implemented")
                 end
+
+            end
+
+            if !pop.individuals[i].genetic_code[j].is_permut
+                if pop.individuals[i].genetic_code[j].value < pop.individuals[i].genetic_code[j].lb
+                    pop.individuals[i].genetic_code[j].value = pop.individuals[i].genetic_code[j].lb
+                end
+
+                if pop.individuals[i].genetic_code[j].value > pop.individuals[i].genetic_code[j].ub
+                    pop.individuals[i].genetic_code[j].value = pop.individuals[i].genetic_code[j].ub
+                end
             end
         end
     end
@@ -106,6 +120,18 @@ function print_pop( pop :: _population )
         for j in 1:pop.n_genes
             print("$(pop.individuals[i].genetic_code[j].value) ")
         end
-        println(" = $(pop.individuals[i].fitness)")
+        println(" = $(pop.individuals[i].fitness) $(pop.individuals[i].obj_f)")
     end
+end
+
+function print_status( pop :: _population )
+    best_i = 1
+
+    for i in 1:pop.size
+        if pop.individuals[i].fitness > pop.individuals[best_i].fitness
+            best_i = i
+        end
+    end
+
+    println("$(pop.individuals[best_i].fitness) $(pop.individuals[best_i].obj_f)")
 end

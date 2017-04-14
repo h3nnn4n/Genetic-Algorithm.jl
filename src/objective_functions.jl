@@ -39,14 +39,14 @@ function fitness_identity( _, ind :: _individual )
 end
 
 function fitness_sphere( pop :: _population, ind :: _individual )
-    fit = ind.obj_f - pop.min_objf
+    fit = ind.obj_f
 
-    fit = fit / (pop.max_objf - pop.min_objf)
+    fit = fit / (pop.max_objf)
 
-    ind.fitness = 1.0 - fit
+    ind.fitness = (1.0 - fit)
 
     if isnan(ind.fitness)
-        println("$(pop.max_objf) $(pop.min_objf)")
+        println("$(pop.max_objf) 0.0")
         throw("kek")
     end
 
