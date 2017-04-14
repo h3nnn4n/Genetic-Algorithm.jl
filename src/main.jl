@@ -8,9 +8,9 @@ Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 function main()
     pop = spawn_empty_population()
     pop.size = 40
-    pop.n_genes = 10
+    pop.n_genes = 20
     pop.mchance = 0.05
-    pop.cchance = 0.55
+    pop.cchance = 0.75
     pop.tourney_size = 2
     pop.kelitism = 2
 
@@ -24,7 +24,8 @@ function main()
 
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
-    pop.objective_function = objf_sphere
+    #=pop.objective_function = objf_sphere=#
+    pop.objective_function = objf_rosen
 
     pop.fitness_function   = fitness_sphere
     #=pop.fitness_function   = fitness_identity=#
@@ -33,7 +34,8 @@ function main()
         new_guy = _individual(pop.n_genes, 0, 0, [])
         for j in 1:pop.n_genes
             #=new_gene = _gene(true, false, false, false, false, true, false)=#
-            new_gene = _gene(false, true, false, false, -50.0, 50.0, 0.0)
+            #=new_gene = _gene(false, true, false, false, -50.0, 50.0, 0.0)=#
+            new_gene = _gene(false, true, false, false, -2.0, 2.0, 0.0)
             #=new_gene = _gene(false, true, false, false, -10.0, 10.0, 0.0)=#
             #=new_gene = _gene(false, false, true, false, 0, 10, 0)=#
             #=new_gene = _gene(false, false, false, true, 0, 10, 0)=#

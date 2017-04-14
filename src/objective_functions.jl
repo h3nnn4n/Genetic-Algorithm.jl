@@ -34,6 +34,17 @@ function objf_sphere( ind :: _individual )
     ind.obj_f = obj
 end
 
+function objf_rosen(ind :: _individual )
+    d = ind.n_genes
+
+    xi    = ind.genetic_code[1:d-1]
+    xnext = ind.genetic_code[2:d]
+
+    s = mapfoldr(x -> 100.0 * (x[2].value - x[1].value^2.0)^2.0 + (x[1].value - 1.0)^2.0, +, collect(zip(xi, xnext)))
+
+    ind.obj_f = s
+end
+
 function fitness_identity( _, ind :: _individual )
     ind.fitness = ind.obj_f
 end
