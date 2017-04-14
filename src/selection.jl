@@ -1,5 +1,15 @@
 include("types.jl")
 
+function selection_random( pop :: _population )
+    new_guys = []
+    for _ in 1:pop.size
+        i = rand(1:pop.size)
+        push!(new_guys, clone(pop.individuals[i]))
+    end
+
+    pop.individuals = new_guys
+end
+
 function selection_roulette( pop :: _population )
     total = mapfoldr(x -> x.fitness, +, pop.individuals)
 
@@ -22,7 +32,7 @@ function selection_roulette( pop :: _population )
 end
 
 function selection_ktourney( pop :: _population )
-    k = 2
+    k = pop.tourney_size
 
     new_guys = []
     for _ in 1:pop.size

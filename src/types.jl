@@ -25,6 +25,8 @@ type _population
     individuals :: Array{_individual, 1}
     min_objf :: Float32
     max_objf :: Float32
+    tourney_size :: Int
+    kelitism :: Int
     crossover_function
     selection_function
     mutation_function

@@ -10,7 +10,9 @@ function main()
     pop.size = 40
     pop.n_genes = 10
     pop.mchance = 0.05
-    pop.cchance = 0.85
+    pop.cchance = 0.55
+    pop.tourney_size = 2
+    pop.kelitism = 2
 
     #=pop.crossover_function = crossover_uniform=#
     #=pop.crossover_function = crossover_one_point=#
@@ -18,6 +20,7 @@ function main()
 
     #=pop.selection_function = selection_ktourney=#
     pop.selection_function = selection_roulette
+    #=pop.selection_function = selection_random=#
 
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
@@ -46,8 +49,18 @@ function main()
     pop.min_objf = pop.individuals[1].obj_f
     pop.max_objf = pop.individuals[1].obj_f
 
+    best_ever = pop.individuals[1]
+
     for iter in 1:5000
         evaluate(pop)
+
+        for i in 1:pop.size
+            if pop.individuals[i].fitness > best_ever.fitness
+                best_ever = clone(pop.individuals[i])
+            end
+        end
+
+        elite = elitism_get(pop)
 
         #=print_pop(pop)=#
         #=println()=#
@@ -62,9 +75,12 @@ function main()
         selection(pop)
         crossover(pop)
         mutation(pop)
+
+        elitism_put_back(pop, elite)
     end
 
     #=print_pop(pop)=#
+    #=println("$(best_ever.fitness) $(best_ever.obj_f)")=#
     println()
 
     return

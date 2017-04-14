@@ -1,9 +1,14 @@
+using Distributions
+
 include("types.jl")
 include("selection.jl")
 include("crossover.jl")
 
 function spawn_empty_population()
-    new_pop = _population(0, 0, 0, 0, [], 0, 0, _ -> _, _ -> _, _ -> _, _ -> _, _ -> _)
+    new_pop = _population(0, 0, 0, 0,
+                         [],
+                         0, 0, 0, 0,
+                         _ -> _, _ -> _, _ -> _, _ -> _, _ -> _)
 end
 
 function init_population( pop :: _population )
@@ -85,17 +90,31 @@ function crossover( pop :: _population )
 end
 
 function mutation( pop :: _population )
+    d = Normal()
+
     for i in 1:pop.size
         for j in 1:pop.n_genes
             if rand() < pop.mchance
                 if pop.individuals[i].genetic_code[j].is_bool
+
                     pop.individuals[i].genetic_code[j].value = !pop.individuals[i].genetic_code[j].value
+
                 elseif pop.individuals[i].genetic_code[j].is_int
-                    dist = Int(ceil((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.025))
-                    pop.individuals[i].genetic_code[j].value += rand(-dist:dist)
+
+                    #=dist = Int(ceil((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01))=#
+                    #=pop.individuals[i].genetic_code[j].value += rand(-dist:dist)=#
+
+                    dist = Int(ceil((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01))
+                    pop.individuals[i].genetic_code[j].value += rand(d) * (dist * 2.0) - dist
+
                 elseif pop.individuals[i].genetic_code[j].is_real
-                    dist = (pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.05
+
+                    dist = (pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01
                     pop.individuals[i].genetic_code[j].value += (rand() * 2.0 - 1.0) * dist
+
+                    #=dist = (pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01=#
+                    #=pop.individuals[i].genetic_code[j].value += (rand(d) * 2.0 - 1.0) * dist=#
+
                 elseif pop.individuals[i].genetic_code[j].is_permut
                     throw("Not implemented")
                 end
@@ -113,6 +132,35 @@ function mutation( pop :: _population )
             end
         end
     end
+end
+
+function elitism_get( pop :: _population )
+    s = sort( pop.individuals, rev=true )[1:pop.kelitism]
+    x = []
+
+    for i in s
+        push!(x, clone(i))
+    end
+
+    return x
+end
+
+function elitism_put_back( pop :: _population, elite )
+    if pop.kelitism == 0
+        return
+    end
+
+    new_guys = []
+
+    for i in elite
+        push!(new_guys, i)
+    end
+
+    for i in pop.individuals[pop.kelitism:pop.size]
+        push!(new_guys, i)
+    end
+
+    pop.individuals = new_guys
 end
 
 distance(a :: _individual, b :: _individual) = mapfoldr((x) -> (x[1].value - x[2].value) ^ 2 , +, collect(zip(a.genetic_code, b.genetic_code)))
@@ -139,11 +187,14 @@ end
 function print_status( pop :: _population )
     best_i = 1
 
+    acc = 0.0
+
     for i in 1:pop.size
+        acc += pop.individuals[i].fitness
         if pop.individuals[i].fitness > pop.individuals[best_i].fitness
             best_i = i
         end
     end
 
-    println("$(pop.individuals[best_i].fitness) $(pop.individuals[best_i].obj_f) $(get_diversity(pop))")
+    println("$(pop.individuals[best_i].fitness) $(acc/pop.size) $(get_diversity(pop))")
 end
