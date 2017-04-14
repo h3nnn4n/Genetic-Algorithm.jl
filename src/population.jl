@@ -115,6 +115,18 @@ function mutation( pop :: _population )
     end
 end
 
+distance(a :: _individual, b :: _individual) = mapfoldr((x) -> (x[1].value - x[2].value) ^ 2 , +, collect(zip(a.genetic_code, b.genetic_code)))
+
+function get_diversity( pop :: _population )
+    d, t = 0, 0
+    for i in 2:pop.size, j in 1:i-1
+        d += distance(pop.individuals[i], pop.individuals[j])
+        t += 1
+    end
+
+    return d / t
+end
+
 function print_pop( pop :: _population )
     for i in 1:pop.size
         for j in 1:pop.n_genes
@@ -133,5 +145,5 @@ function print_status( pop :: _population )
         end
     end
 
-    println("$(pop.individuals[best_i].fitness) $(pop.individuals[best_i].obj_f)")
+    println("$(pop.individuals[best_i].fitness) $(pop.individuals[best_i].obj_f) $(get_diversity(pop))")
 end
