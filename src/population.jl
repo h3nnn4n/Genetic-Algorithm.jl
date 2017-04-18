@@ -104,8 +104,8 @@ function mutation( pop :: _population )
                     #=dist = Int(ceil((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01))=#
                     #=pop.individuals[i].genetic_code[j].value += rand(-dist:dist)=#
 
-                    dist = Int(ceil((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01))
-                    pop.individuals[i].genetic_code[j].value += rand(d) * (dist * 2.0) - dist
+                    dist = ((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01)
+                    pop.individuals[i].genetic_code[j].value += Int(ceil(rand(d))) * (dist * 2.0) - dist
 
                 elseif pop.individuals[i].genetic_code[j].is_real
 
@@ -196,5 +196,5 @@ function print_status( pop :: _population )
         end
     end
 
-    println("$(pop.individuals[best_i].fitness) $(acc/pop.size) $(get_diversity(pop))")
+    @printf("%4.8f %4.8f %4.8f \n", pop.individuals[best_i].fitness, acc/pop.size, get_diversity(pop))
 end
