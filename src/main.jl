@@ -1,3 +1,8 @@
+using Images
+using ImageView
+using Colors
+using TestImages
+
 include("types.jl")
 include("population.jl")
 include("selection.jl")
@@ -6,9 +11,11 @@ include("objective_functions.jl")
 Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 
 function main()
+    #=println("Starting")=#
+    res = 10
     pop = spawn_empty_population()
-    pop.size = 40
-    pop.n_genes = 20
+    pop.size = 70
+    pop.n_genes = res*res
     pop.mchance = 0.05
     pop.cchance = 0.75
     pop.tourney_size = 2
@@ -25,7 +32,8 @@ function main()
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
     #=pop.objective_function = objf_sphere=#
-    pop.objective_function = objf_rosen
+    #=pop.objective_function = objf_rosen=#
+    pop.objective_function = objf_img
 
     pop.fitness_function   = fitness_sphere
     #=pop.fitness_function   = fitness_identity=#
@@ -35,7 +43,8 @@ function main()
         for j in 1:pop.n_genes
             #=new_gene = _gene(true, false, false, false, false, true, false)=#
             #=new_gene = _gene(false, true, false, false, -50.0, 50.0, 0.0)=#
-            new_gene = _gene(false, true, false, false, -2.0, 2.0, 0.0)
+            #=new_gene = _gene(false, true, false, false, -2.0, 2.0, 0.0)=#
+            new_gene = _gene(false, true, false, false, 0, 1.0, 0.0)
             #=new_gene = _gene(false, true, false, false, -10.0, 10.0, 0.0)=#
             #=new_gene = _gene(false, false, true, false, 0, 10, 0)=#
             #=new_gene = _gene(false, false, false, true, 0, 10, 0)=#
@@ -67,6 +76,7 @@ function main()
         #=print_pop(pop)=#
         #=println()=#
 
+        print("$iter ")
         print_status(pop)
         #=if iter % 1000 == 0=#
             #=print_status(pop)=#
@@ -79,11 +89,16 @@ function main()
         mutation(pop)
 
         elitism_put_back(pop, elite)
+        name = @sprintf("kappa_%02d.png", iter)
+
+        img_final = [ (Float32(i.value)) for i in best_ever.genetic_code ] # :: Array{Float32}
+        img_final2 = convert(Array{Gray{Float32}}, reshape(img_final, res, res))
+        save(name, img_final2)
     end
 
-    #=print_pop(pop)=#
-    #=println("$(best_ever.fitness) $(best_ever.obj_f)")=#
-    println()
+    #=for i in best_ever.genetic_code=#
+        #=println("$(i.value) ")=#
+    #=end=#
 
     return
 end
