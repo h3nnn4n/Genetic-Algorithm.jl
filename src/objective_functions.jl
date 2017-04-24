@@ -2,7 +2,7 @@ include("types.jl")
 
 #=img = load("lena2.png")=#
 #=img = load("lena3.png")=#
-img = load("box.png")
+#=img = load("box.png")=#
 
 function objf_alternating_bit( ind :: _individual )
     obj = 0.0
@@ -41,17 +41,17 @@ end
 function objf_img(ind :: _individual )
     obj = 0
 
-    x = size(img)[1]
-    y = size(img)[2]
+    #=x = size(img)[1]=#
+    #=y = size(img)[2]=#
 
-    total = 1
+    #=total = 1=#
 
-    for i in 1:x
-        for j in 1:y
-            obj += abs(ind.genetic_code[(j-1) * x + (i-1) + 1].value - (convert(Gray{Float32}, img[i, j])))
-            total += 1
-        end
-    end
+    #=for i in 1:x=#
+        #=for j in 1:y=#
+            #=obj += abs(ind.genetic_code[(j-1) * x + (i-1) + 1].value - (convert(Gray{Float32}, img[i, j])))=#
+            #=total += 1=#
+        #=end=#
+    #=end=#
 
     ind.obj_f = obj
     #=ind.obj_f = 1.0 - ( obj / total )=#

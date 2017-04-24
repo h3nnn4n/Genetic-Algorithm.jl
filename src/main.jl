@@ -1,7 +1,7 @@
-using Images
-using ImageView
-using Colors
-using TestImages
+#using Images
+#using ImageView
+#using Colors
+#using TestImages
 
 include("types.jl")
 include("population.jl")
@@ -12,7 +12,7 @@ Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 
 function main()
     #=println("Starting")=#
-    res = 10
+    res = 8
     pop = spawn_empty_population()
     pop.size = 70
     pop.n_genes = res*res
@@ -32,8 +32,8 @@ function main()
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
     #=pop.objective_function = objf_sphere=#
-    #=pop.objective_function = objf_rosen=#
-    pop.objective_function = objf_img
+    pop.objective_function = objf_rosen
+    #=pop.objective_function = objf_img=#
 
     pop.fitness_function   = fitness_sphere
     #=pop.fitness_function   = fitness_identity=#
@@ -44,10 +44,11 @@ function main()
             #=new_gene = _gene(true, false, false, false, false, true, false)=#
             #=new_gene = _gene(false, true, false, false, -50.0, 50.0, 0.0)=#
             #=new_gene = _gene(false, true, false, false, -2.0, 2.0, 0.0)=#
-            new_gene = _gene(false, true, false, false, 0, 1.0, 0.0)
+            #=new_gene = _gene(false, true, false, false, 0, 1.0, 0.0)=#
             #=new_gene = _gene(false, true, false, false, -10.0, 10.0, 0.0)=#
             #=new_gene = _gene(false, false, true, false, 0, 10, 0)=#
             #=new_gene = _gene(false, false, false, true, 0, 10, 0)=#
+            new_gene = _gene(real, 0, 1.0, 0.0)
             push!(new_guy.genetic_code, new_gene)
         end
         push!(pop.individuals, new_guy)
@@ -89,11 +90,11 @@ function main()
         mutation(pop)
 
         elitism_put_back(pop, elite)
-        name = @sprintf("kappa_%02d.png", iter)
+        #=name = @sprintf("kappa_%02d.png", iter)=#
 
-        img_final = [ (Float32(i.value)) for i in best_ever.genetic_code ] # :: Array{Float32}
-        img_final2 = convert(Array{Gray{Float32}}, reshape(img_final, res, res))
-        save(name, img_final2)
+        #=img_final = [ (Float32(i.value)) for i in best_ever.genetic_code ] # :: Array{Float32}=#
+        #=img_final2 = convert(Array{Gray{Float32}}, reshape(img_final, res, res))=#
+        #=save(name, img_final2)=#
     end
 
     #=for i in best_ever.genetic_code=#

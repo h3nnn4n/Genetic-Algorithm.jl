@@ -14,13 +14,13 @@ end
 function init_population( pop :: _population )
     for i in 1:pop.size
         for j in 1:pop.n_genes
-            if pop.individuals[i].genetic_code[j].is_bool
+            if pop.individuals[i].genetic_code[j].gen_type == bool
                 pop.individuals[i].genetic_code[j].value = rand(Bool)
-            elseif pop.individuals[i].genetic_code[j].is_int
+            elseif pop.individuals[i].genetic_code[j].gen_type == int
                 pop.individuals[i].genetic_code[j].value = rand(pop.individuals[i].genetic_code[j].lb:pop.individuals[i].genetic_code[j].ub)
-            elseif pop.individuals[i].genetic_code[j].is_real
+            elseif pop.individuals[i].genetic_code[j].gen_type == real
                 pop.individuals[i].genetic_code[j].value = rand() * (pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) + pop.individuals[i].genetic_code[j].lb
-            elseif pop.individuals[i].genetic_code[j].is_permut
+            elseif pop.individuals[i].genetic_code[j].gen_type == permut
                 throw("Not implemented")
             end
         end
@@ -44,10 +44,7 @@ function clone( guy :: _individual )
     genetic_code = Array{_gene}( guy.n_genes )
 
     for i in 1:guy.n_genes
-        genetic_code[i] = _gene(guy.genetic_code[i].is_bool,
-                                guy.genetic_code[i].is_real,
-                                guy.genetic_code[i].is_int,
-                                guy.genetic_code[i].is_permut,
+        genetic_code[i] = _gene(guy.genetic_code[i].gen_type,
                                 guy.genetic_code[i].lb,
                                 guy.genetic_code[i].ub,
                                 guy.genetic_code[i].value)
@@ -95,11 +92,11 @@ function mutation( pop :: _population )
     for i in 1:pop.size
         for j in 1:pop.n_genes
             if rand() < pop.mchance
-                if pop.individuals[i].genetic_code[j].is_bool
+                if pop.individuals[i].genetic_code[j].gen_type == bool
 
                     pop.individuals[i].genetic_code[j].value = !pop.individuals[i].genetic_code[j].value
 
-                elseif pop.individuals[i].genetic_code[j].is_int
+                elseif pop.individuals[i].genetic_code[j].gen_type == int
 
                     #=dist = Int(ceil((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01))=#
                     #=pop.individuals[i].genetic_code[j].value += rand(-dist:dist)=#
@@ -107,7 +104,7 @@ function mutation( pop :: _population )
                     dist = ((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01)
                     pop.individuals[i].genetic_code[j].value += Int(ceil(rand(d))) * (dist * 2.0) - dist
 
-                elseif pop.individuals[i].genetic_code[j].is_real
+                elseif pop.individuals[i].genetic_code[j].gen_type == real
 
                     dist = (pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01
                     pop.individuals[i].genetic_code[j].value += (rand() * 2.0 - 1.0) * dist
@@ -115,13 +112,13 @@ function mutation( pop :: _population )
                     #=dist = (pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01=#
                     #=pop.individuals[i].genetic_code[j].value += (rand(d) * 2.0 - 1.0) * dist=#
 
-                elseif pop.individuals[i].genetic_code[j].is_permut
+                elseif pop.individuals[i].genetic_code[j].gen_type == permut
                     throw("Not implemented")
                 end
 
             end
 
-            if !pop.individuals[i].genetic_code[j].is_permut
+            if !(pop.individuals[i].genetic_code[j].gen_type == permut)
                 if pop.individuals[i].genetic_code[j].value < pop.individuals[i].genetic_code[j].lb
                     pop.individuals[i].genetic_code[j].value = pop.individuals[i].genetic_code[j].lb
                 end
