@@ -1,8 +1,7 @@
+@enum GENE_TYPE bool=1 int=2 real=3 permut=4
+
 type _gene
-    is_bool   :: Bool
-    is_real   :: Bool
-    is_int    :: Bool
-    is_permut :: Bool
+    gen_type  :: GENE_TYPE
 
     lb        :: Any
     ub        :: Any
