@@ -29,7 +29,7 @@ set tics nomirror
 set style line 12 lc rgb'#808080' lt 0 lw 1
 set grid back ls 12
 
-show style lines
+#show style lines
 
 # color definitions
 set style line 1 lc rgb '#000000' pt 1 ps 1.5 lw 1
@@ -53,4 +53,4 @@ set xtics rotate by -55
 #set format y "%.0s*10^%T"
 #set format y "%.0tx10^%1T"
 
-plot 'log'      u (column(0)):4 t 'Diversity' w l ls 1, \
+plot 'log'      u (column(0)):4 t 'Diversity' w l ls 1
