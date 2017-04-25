@@ -4,6 +4,57 @@ include("types.jl")
 #=img = load("lena3.png")=#
 #=img = load("box.png")=#
 
+function objf_nqueens( ind :: _individual )
+    obj = 0.0
+
+    nqueens = Int(sqrt(ind.n_genes))
+
+    hv = 0
+    vv = 0
+
+    dv1 = 0
+    dv2 = 0
+
+    for i in 1:nqueens
+        w = 0
+        for j in 1:nqueens
+            if ind.genetic_code[(i-1) + (j-1) * nqueens + 1].value
+                w += 1
+            end
+        end
+
+        if w == 1
+            hv += 0
+        elseif w == 0
+            hv += 2
+        else
+            hv += w
+        end
+    end
+
+    for i in 1:nqueens
+        w = 0
+        for j in 1:nqueens
+            if ind.genetic_code[(j-1) + (i-1) * nqueens + 1].value
+                w += 1
+            end
+        end
+
+        if w == 1
+            vv += 0
+        elseif w == 0
+            vv += 2
+        else
+            vv += w
+        end
+    end
+
+    obj = hv + vv + dv1 + dv2
+
+    ind.obj_f = obj
+end
+
+
 function objf_alternating_bit( ind :: _individual )
     obj = 0.0
 
@@ -66,6 +117,10 @@ function objf_rosen(ind :: _individual )
     s = mapfoldr(x -> 100.0 * (x[2].value - x[1].value^2.0)^2.0 + (x[1].value - 1.0)^2.0, +, collect(zip(xi, xnext)))
 
     ind.obj_f = s
+end
+
+function fitness_nqueens( _, ind :: _individual )
+    ind.fitness = 1.0 - ind.obj_f / ( sqrt(ind.n_genes) * 4.0 )
 end
 
 function fitness_identity( _, ind :: _individual )

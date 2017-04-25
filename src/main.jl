@@ -14,28 +14,30 @@ function main()
     #=println("Starting")=#
     res = 8
     pop = spawn_empty_population()
-    pop.size = 70
+    pop.size = 10
     pop.n_genes = res*res
     pop.mchance = 0.05
     pop.cchance = 0.75
-    pop.tourney_size = 2
+    pop.tourney_size = 5
     pop.kelitism = 2
 
-    #=pop.crossover_function = crossover_uniform=#
+    pop.crossover_function = crossover_uniform
     #=pop.crossover_function = crossover_one_point=#
-    pop.crossover_function = crossover_blx
+    #=pop.crossover_function = crossover_blx=#
 
-    #=pop.selection_function = selection_ktourney=#
-    pop.selection_function = selection_roulette
+    pop.selection_function = selection_ktourney
+    #=pop.selection_function = selection_roulette=#
     #=pop.selection_function = selection_random=#
 
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
     #=pop.objective_function = objf_sphere=#
-    pop.objective_function = objf_rosen
+    #=pop.objective_function = objf_rosen=#
+    pop.objective_function = objf_nqueens
     #=pop.objective_function = objf_img=#
 
     pop.fitness_function   = fitness_sphere
+    #=pop.fitness_function   = fitness_nqueens=#
     #=pop.fitness_function   = fitness_identity=#
 
     for i in 1:pop.size
@@ -48,7 +50,8 @@ function main()
             #=new_gene = _gene(false, true, false, false, -10.0, 10.0, 0.0)=#
             #=new_gene = _gene(false, false, true, false, 0, 10, 0)=#
             #=new_gene = _gene(false, false, false, true, 0, 10, 0)=#
-            new_gene = _gene(real, 0, 1.0, 0.0)
+            #=new_gene = _gene(real, 0, 1.0, 0.0)=#
+            new_gene = _gene(bool, false, true, 0.0)
             push!(new_guy.genetic_code, new_gene)
         end
         push!(pop.individuals, new_guy)
@@ -95,6 +98,18 @@ function main()
         #=img_final = [ (Float32(i.value)) for i in best_ever.genetic_code ] # :: Array{Float32}=#
         #=img_final2 = convert(Array{Gray{Float32}}, reshape(img_final, res, res))=#
         #=save(name, img_final2)=#
+    end
+
+    nqueens = res
+    for i in 1:nqueens
+        for j in 1:nqueens
+            if best_ever.genetic_code[(i-1) + (j-1) * nqueens + 1].value
+                @printf(STDERR, "Q ")
+            else
+                @printf(STDERR, ". ")
+            end
+        end
+        @printf(STDERR,"\n")
     end
 
     #=for i in best_ever.genetic_code=#
