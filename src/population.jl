@@ -101,7 +101,7 @@ function mutation( pop :: _population )
                     #=dist = Int(ceil((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01))=#
                     #=pop.individuals[i].genetic_code[j].value += rand(-dist:dist)=#
 
-                    dist = ((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01)
+                    dist = Int(ceil(((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.1)))
                     pop.individuals[i].genetic_code[j].value += Int(ceil(rand(d))) * (dist * 2.0) - dist
 
                 elseif pop.individuals[i].genetic_code[j].gen_type == real

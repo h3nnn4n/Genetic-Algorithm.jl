@@ -4,6 +4,44 @@ include("types.jl")
 #=img = load("lena3.png")=#
 #=img = load("box.png")=#
 
+function objf_nqueens_int( ind :: _individual )
+    obj = 0.0
+
+    nqueens = Int((ind.n_genes))
+
+    hv = 0
+
+    dv1 = 0
+
+    # Horizontal and vertical
+    for i in 1:nqueens
+        for j in 1:nqueens
+            if ind.genetic_code[i].value == ind.genetic_code[j].value
+                if i != j
+                    hv += 2
+                    #=@printf("%d %d %d %d\n", i, ind.genetic_code[i].value, j, ind.genetic_code[j].value)=#
+                end
+            end
+        end
+    end
+
+    # Both diagonals
+    for i in 1:nqueens
+        for j in 1:nqueens
+            if abs(ind.genetic_code[i].value - ind.genetic_code[j].value) == abs(i-j)
+            #=if abs(ind.genetic_code[i].value - i) == abs(ind.genetic_code[j].value - j)=#
+                if i != j
+                    dv1 += 1
+                end
+            end
+        end
+    end
+
+    obj = hv + dv1
+
+    ind.obj_f = obj
+end
+
 function objf_nqueens( ind :: _individual )
     obj = 0.0
 
@@ -15,39 +53,43 @@ function objf_nqueens( ind :: _individual )
     dv1 = 0
     dv2 = 0
 
+    # Horizontal and vertical
     for i in 1:nqueens
-        w = 0
+        u = 0
+        v = 0
         for j in 1:nqueens
             if ind.genetic_code[(i-1) + (j-1) * nqueens + 1].value
-                w += 1
+                u += 1
             end
-        end
 
-        if w == 1
-            hv += 0
-        elseif w == 0
-            hv += 2
-        else
-            hv += w
-        end
-    end
-
-    for i in 1:nqueens
-        w = 0
-        for j in 1:nqueens
             if ind.genetic_code[(j-1) + (i-1) * nqueens + 1].value
-                w += 1
+                v += 1
             end
         end
 
-        if w == 1
-            vv += 0
-        elseif w == 0
-            vv += 2
+        if u == 1
+            hv += 0
+        elseif u == 0
+            hv += 4
         else
-            vv += w
+            hv += u * 2.0
+        end
+
+        if v == 1
+            hv += 0
+        elseif v == 0
+            hv += 4
+        else
+            hv += v * 2.0
         end
     end
+
+    #=u = 0=#
+    #=for i in 1:nqueens=#
+        #=if ind.genetic_code[(i-1) + (i-1) * nqueens + 1].value=#
+            #=u += 1=#
+        #=end=#
+    #=end=#
 
     obj = hv + vv + dv1 + dv2
 

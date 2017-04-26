@@ -12,14 +12,16 @@ Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 
 function main()
     #=println("Starting")=#
-    res = 8
+    res = 16
     pop = spawn_empty_population()
-    pop.size = 10
-    pop.n_genes = res*res
-    pop.mchance = 0.05
+    pop.size = 50
+    #=pop.n_genes = res*res=#
+    pop.n_genes = res
+    pop.mchance = 0.07
     pop.cchance = 0.75
-    pop.tourney_size = 5
-    pop.kelitism = 2
+    pop.tourney_size = 2
+    #=pop.kelitism = Int(ceil((res*res) * 0.15))=#
+    pop.kelitism = 1
 
     pop.crossover_function = crossover_uniform
     #=pop.crossover_function = crossover_one_point=#
@@ -33,7 +35,8 @@ function main()
     #=pop.objective_function = objf_alternating_bit=#
     #=pop.objective_function = objf_sphere=#
     #=pop.objective_function = objf_rosen=#
-    pop.objective_function = objf_nqueens
+    #=pop.objective_function = objf_nqueens=#
+    pop.objective_function = objf_nqueens_int
     #=pop.objective_function = objf_img=#
 
     pop.fitness_function   = fitness_sphere
@@ -51,7 +54,8 @@ function main()
             #=new_gene = _gene(false, false, true, false, 0, 10, 0)=#
             #=new_gene = _gene(false, false, false, true, 0, 10, 0)=#
             #=new_gene = _gene(real, 0, 1.0, 0.0)=#
-            new_gene = _gene(bool, false, true, 0.0)
+            #=new_gene = _gene(bool, false, true, 0.0)=#
+            new_gene = _gene(int, 1, res, 0)
             push!(new_guy.genetic_code, new_gene)
         end
         push!(pop.individuals, new_guy)
@@ -66,7 +70,7 @@ function main()
 
     best_ever = pop.individuals[1]
 
-    for iter in 1:5000
+    for iter in 1:10000
         evaluate(pop)
 
         for i in 1:pop.size
@@ -77,11 +81,16 @@ function main()
 
         elite = elitism_get(pop)
 
-        #=print_pop(pop)=#
-        #=println()=#
+        #=if iter % 100 == 0=#
+            #=@printf(STDERR, "%d %f\n", iter, best_ever.fitness)=#
+        #=end=#
 
         print("$iter ")
         print_status(pop)
+
+        #=print_pop(pop)=#
+        #=println()=#
+
         #=if iter % 1000 == 0=#
             #=print_status(pop)=#
             #=println()=#
@@ -100,17 +109,37 @@ function main()
         #=save(name, img_final2)=#
     end
 
+    for i in 1:res
+        @printf(STDERR, "%d ", best_ever.genetic_code[i].value)
+    end
+    println()
+
     nqueens = res
     for i in 1:nqueens
-        for j in 1:nqueens
-            if best_ever.genetic_code[(i-1) + (j-1) * nqueens + 1].value
-                @printf(STDERR, "Q ")
-            else
-                @printf(STDERR, ". ")
-            end
+        for j in 2:best_ever.genetic_code[i].value
+            @printf(STDERR, ". ")
         end
+
+        @printf(STDERR, "Q ")
+
+        for j in best_ever.genetic_code[i].value+1:nqueens
+            @printf(STDERR, ", ")
+        end
+
         @printf(STDERR,"\n")
     end
+
+    #=nqueens = res=#
+    #=for i in 1:nqueens=#
+        #=for j in 1:nqueens=#
+            #=if best_ever.genetic_code[(i-1) + (j-1) * nqueens + 1].value=#
+                #=@printf(STDERR, "Q ")=#
+            #=else=#
+                #=@printf(STDERR, ". ")=#
+            #=end=#
+        #=end=#
+        #=@printf(STDERR,"\n")=#
+    #=end=#
 
     #=for i in best_ever.genetic_code=#
         #=println("$(i.value) ")=#
