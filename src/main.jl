@@ -12,7 +12,7 @@ Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 
 function main()
     #=println("Starting")=#
-    res = 16
+    res = 8
     pop = spawn_empty_population()
     pop.size = 50
     #=pop.n_genes = res*res=#
@@ -23,7 +23,8 @@ function main()
     #=pop.kelitism = Int(ceil((res*res) * 0.15))=#
     pop.kelitism = 1
 
-    pop.crossover_function = crossover_uniform
+    pop.crossover_function = crossover_pmx
+    #=pop.crossover_function = crossover_uniform=#
     #=pop.crossover_function = crossover_one_point=#
     #=pop.crossover_function = crossover_blx=#
 
@@ -46,16 +47,10 @@ function main()
     for i in 1:pop.size
         new_guy = _individual(pop.n_genes, 0, 0, [])
         for j in 1:pop.n_genes
-            #=new_gene = _gene(true, false, false, false, false, true, false)=#
-            #=new_gene = _gene(false, true, false, false, -50.0, 50.0, 0.0)=#
-            #=new_gene = _gene(false, true, false, false, -2.0, 2.0, 0.0)=#
-            #=new_gene = _gene(false, true, false, false, 0, 1.0, 0.0)=#
-            #=new_gene = _gene(false, true, false, false, -10.0, 10.0, 0.0)=#
-            #=new_gene = _gene(false, false, true, false, 0, 10, 0)=#
-            #=new_gene = _gene(false, false, false, true, 0, 10, 0)=#
             #=new_gene = _gene(real, 0, 1.0, 0.0)=#
             #=new_gene = _gene(bool, false, true, 0.0)=#
-            new_gene = _gene(int, 1, res, 0)
+            #=new_gene = _gene(int, 1, res, 0)=#
+            new_gene = _gene(permut, 1, res, 0)
             push!(new_guy.genetic_code, new_gene)
         end
         push!(pop.individuals, new_guy)
@@ -70,7 +65,7 @@ function main()
 
     best_ever = pop.individuals[1]
 
-    for iter in 1:10000
+    for iter in 1:1000
         evaluate(pop)
 
         for i in 1:pop.size

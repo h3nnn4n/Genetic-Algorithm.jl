@@ -21,8 +21,13 @@ function init_population( pop :: _population )
             elseif pop.individuals[i].genetic_code[j].gen_type == real
                 pop.individuals[i].genetic_code[j].value = rand() * (pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) + pop.individuals[i].genetic_code[j].lb
             elseif pop.individuals[i].genetic_code[j].gen_type == permut
-                throw("Not implemented")
+                #=throw("Not implemented")=#
+                pop.individuals[i].genetic_code[j].value = j
             end
+        end
+
+        if pop.individuals[i].genetic_code[1].gen_type == permut
+            shuffle!(pop.individuals[i].genetic_code)
         end
     end
 end
@@ -113,7 +118,11 @@ function mutation( pop :: _population )
                     #=pop.individuals[i].genetic_code[j].value += (rand(d) * 2.0 - 1.0) * dist=#
 
                 elseif pop.individuals[i].genetic_code[j].gen_type == permut
-                    throw("Not implemented")
+                    a = rand(1:pop.n_genes)
+
+                    t = pop.individuals[i].genetic_code[j].value
+                    pop.individuals[i].genetic_code[j].value = pop.individuals[i].genetic_code[a].value
+                    pop.individuals[i].genetic_code[a].value = t
                 end
 
             end
