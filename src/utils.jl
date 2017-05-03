@@ -34,11 +34,11 @@ function print_path( ind :: _individual )
 
         #=@printf("Trying move: %2d  crossroads = %2d\n", move, crossroads)=#
 
-        if crossroads == 1
-            break
-        end
+        #=if crossroads == 1=#
+            #=break=#
+        #=end=#
 
-        if crossroads > 2
+        if crossroads > 2 || crossroads == 1
             oldx, oldy = x, y
 
             if move == 1
@@ -56,7 +56,7 @@ function print_path( ind :: _individual )
             else
                 obj += step_point * 5
                 used[x, y] += 2
-                #=@printf(STDERR, "pos = %2d %2d: %2d  WITH TURN\n", x, y, map[x, y])=#
+                @printf(STDERR, "%3d move = %2d pos = %2d %2d: %2d  WITH TURN\n", i, move, x, y, map[x, y])
             end
         end
 
@@ -81,7 +81,7 @@ function print_path( ind :: _individual )
             used[x, y] += 2
             #=obj += step_point=#
 
-            #=@printf(STDERR, "pos = %2d %2d: %2d FORWARD\n", x, y, map[x, y])=#
+            @printf(STDERR, "%3d move = %2d pos = %2d %2d: %2d FORWARD\n", i, move, x, y, map[x, y])
         end
 
         if crossroads == 2
@@ -103,7 +103,7 @@ function print_path( ind :: _individual )
             elseif used[i, j] == -1
                 @printf("* ")
             else
-                @printf("? ")
+                @printf("+ ")
             end
         end
         @printf("\n")
@@ -242,3 +242,56 @@ end
 #=for i in best_ever.genetic_code=#
     #=println("$(i.value) ")=#
 #=end=#
+
+function print_mapppp( used )
+    x, y = size(used)
+
+    for i in 1:x
+        for j in 1:y
+            if used[i, j] == 0
+                @printf("X ")
+                #=@printf("  ")=#
+            elseif used[i, j] == 1
+                @printf("  ")
+            elseif used[i, j] == 3
+                @printf(". ")
+            elseif used[i, j] == -1
+                @printf("* ")
+            else
+                @printf("+ ")
+            end
+        end
+        @printf("\n")
+    end
+end
+
+function map_magic( mapp )
+    changed = true
+
+    xs , ys = size( mapp )
+
+    #=print_mapppp ( mapp )=#
+
+    cnt = 0
+
+    while changed && cnt < 10
+        cnt += 1
+        changed = false
+        for i in 2:xs-1
+            for j in 2:ys-1
+                s = 0
+                for a in -1:1
+                    for b in -1:1
+                        s += mapp[i + a, j + b]
+                    end
+                end
+
+                if s == 2
+                    changed = true
+                    mapp[i, j] = 0
+                end
+            end
+        end
+        #=print_mapppp ( mapp )=#
+    end
+end

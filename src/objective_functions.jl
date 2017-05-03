@@ -10,6 +10,9 @@ map = readdlm("map.txt")
 eu_dist( x, y, a, b ) = sqrt(( x - a )^2 + ( y - b )^2)
 
 function objf_path( ind :: _individual )
+    #=map_magic(map)=#
+
+    #=exit()=#
     obj = 0.0
 
     oob_penalty = -5
@@ -92,8 +95,8 @@ function objf_path( ind :: _individual )
                 if used[x, y] > 1
                     obj -= step_point * used[x, y]
                 else
-                    #=obj += step_point=#
-                    obj += (45 - eu_dist(x, y, xf, yf)) * .25
+                    obj += step_point
+                    #=obj += (45 - eu_dist(x, y, xf, yf)) * .25=#
                 end
 
                 used[x, y] += 2
@@ -106,6 +109,16 @@ function objf_path( ind :: _individual )
     #=@printf(STDERR, "cost: %3d\n\n", obj)=#
 
     #=print_path( ind )=#
+
+    for i in 1:x
+        for j in 1:y
+            if used[i, j] > 0
+                used[i, j] -= 1
+            end
+        end
+    end
+
+    obj /= sum( used )
 
     ind.obj_f = obj
 end
