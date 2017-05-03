@@ -7,6 +7,8 @@ include("utils.jl")
 
 map = readdlm("map.txt")
 
+eu_dist( x, y, a, b ) = sqrt(( x - a )^2 + ( y - b )^2)
+
 function objf_path( ind :: _individual )
     obj = 0.0
 
@@ -37,11 +39,11 @@ function objf_path( ind :: _individual )
 
         #=@printf("Trying move: %2d  crossroads = %2d\n", move, crossroads)=#
 
-        if crossroads == 1
-            break
-        end
+        #=if crossroads == 1=#
+            #=break=#
+        #=end=#
 
-        if crossroads > 2
+        if crossroads > 2 || crossroads == 1
             oldx, oldy = x, y
 
             if move == 1
@@ -68,39 +70,36 @@ function objf_path( ind :: _individual )
                 used[x, y] += 2
                 #=@printf(STDERR, "pos = %2d %2d: %2d  WITH TURN\n", x, y, map[x, y])=#
             end
-        end
+        else
+            while crossroads == 2
+                oldx, oldy = x, y
 
-        while crossroads == 2
-            oldx, oldy = x, y
+                if move == 1
+                    y -= 1
+                elseif move == 2
+                    x += 1
+                elseif move == 3
+                    y += 1
+                elseif move == 4
+                    x -= 1
+                end
 
-            if move == 1
-                y -= 1
-            elseif move == 2
-                x += 1
-            elseif move == 3
-                y += 1
-            elseif move == 4
-                x -= 1
+                if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0  #|| used[x, y] != 1
+                    x, y = oldx, oldy
+                    break
+                end
+
+                if used[x, y] > 1
+                    obj -= step_point * used[x, y]
+                else
+                    #=obj += step_point=#
+                    obj += (45 - eu_dist(x, y, xf, yf)) * .25
+                end
+
+                used[x, y] += 2
+
+                #=@printf(STDERR, "pos = %2d %2d: %2d FORWARD\n", x, y, map[x, y])=#
             end
-
-            if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0  #|| used[x, y] != 1
-                x, y = oldx, oldy
-                break
-            end
-
-            if used[x, y] > 1
-                obj -= step_point * used[x, y]
-            else
-                obj += step_point
-            end
-
-            used[x, y] += 2
-
-            #=@printf(STDERR, "pos = %2d %2d: %2d FORWARD\n", x, y, map[x, y])=#
-        end
-
-        if crossroads == 2
-            #=obj += step_point=#
         end
     end
 
