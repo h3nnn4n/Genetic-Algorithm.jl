@@ -18,7 +18,7 @@ function main()
     pop.size = 50
     #=pop.n_genes = res*res=#
     pop.n_genes = res
-    pop.mchance = 0.03
+    pop.mchance = 0.02
     pop.cchance = 0.95
     pop.tourney_size = 2
     #=pop.kelitism = Int(ceil((res*res) * 0.15))=#
@@ -26,7 +26,8 @@ function main()
 
     #=pop.crossover_function = crossover_pmx=#
     #=pop.crossover_function = crossover_uniform=#
-    pop.crossover_function = crossover_one_point
+    pop.crossover_function = crossover_rand_points
+    #=pop.crossover_function = crossover_one_point=#
     #=pop.crossover_function = crossover_blx=#
 
     pop.selection_function = selection_ktourney

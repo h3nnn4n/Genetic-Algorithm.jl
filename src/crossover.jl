@@ -15,6 +15,27 @@ function crossover_one_point( pop :: _population, p1 :: Int, p2 :: Int )
     return u, v
 end
 
+function crossover_rand_points( pop :: _population, p1 :: Int, p2 :: Int )
+    u = clone(pop.individuals[p1])
+    v = clone(pop.individuals[p2])
+
+    swap = false
+
+    for i in 1:pop.n_genes
+        if rand() < 0.1
+            swap = !swap
+        end
+
+        if swap
+            a = u.genetic_code[i]
+            u.genetic_code[i] = v.genetic_code[i]
+            v.genetic_code[i] = a
+        end
+    end
+
+    return u, v
+end
+
 function crossover_uniform( pop :: _population, p1 :: Int, p2 :: Int )
     u = clone(pop.individuals[p1])
     v = clone(pop.individuals[p2])
