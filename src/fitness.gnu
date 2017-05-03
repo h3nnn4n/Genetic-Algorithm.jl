@@ -47,7 +47,7 @@ set key samplen 4
 set xlabel 'Geração'
 set ylabel 'Fitness'
 
-#set xrange [0:1]
+#set yrange [0:1]
 #set yrange [0:1300000]
 set xtics rotate by -55
 #set format y "%.0s*10^%T"
