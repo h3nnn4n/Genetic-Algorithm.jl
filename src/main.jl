@@ -15,18 +15,18 @@ function main()
     #=println("Starting")=#
     res = 100
     pop = spawn_empty_population()
-    pop.size = 20
+    pop.size = 50
     #=pop.n_genes = res*res=#
     pop.n_genes = res
-    pop.mchance = 0.4
-    pop.cchance = 0.65
+    pop.mchance = 0.01
+    pop.cchance = 0.55
     pop.tourney_size = 2
     #=pop.kelitism = Int(ceil((res*res) * 0.15))=#
     pop.kelitism = 0
 
     #=pop.crossover_function = crossover_pmx=#
-    pop.crossover_function = crossover_uniform
-    #=pop.crossover_function = crossover_one_point=#
+    #=pop.crossover_function = crossover_uniform=#
+    pop.crossover_function = crossover_one_point
     #=pop.crossover_function = crossover_blx=#
 
     pop.selection_function = selection_ktourney
@@ -45,6 +45,7 @@ function main()
     #=pop.fitness_function   = fitness_sphere=#
     #=pop.fitness_function   = fitness_nqueens=#
     pop.fitness_function   = fitness_identity
+    #=pop.fitness_function   = fitness_normalized_ub=#
     #=pop.fitness_function   = fitness_super_normalizer=#
 
     for i in 1:pop.size
@@ -68,10 +69,10 @@ function main()
 
     best_ever = pop.individuals[1]
 
-    evaluate(pop)
-    print_pop(pop)
+    #=evaluate(pop)=#
+    #=print_pop(pop)=#
 
-    for iter in 1:10
+    for iter in 1:1000
         evaluate(pop)
 
         for i in 1:pop.size

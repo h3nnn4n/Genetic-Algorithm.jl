@@ -6,6 +6,9 @@ function print_path( ind :: _individual )
     xs, ys =  11,  2   # start pos
     xf, yf =  2 , 21   # end pos
 
+    obj = 0
+    step_point = 0
+
     sizex, sizey = size(map)
 
     used = deepcopy(map)
@@ -19,36 +22,70 @@ function print_path( ind :: _individual )
 
     invalid_path = false
     complete_path = false
-    @printf(STDERR, "\npos = %2d %2d: %2d\n", x, y, map[x, y])
+    #=@printf(STDERR, "\npos = %2d %2d: %2d\n", x, y, map[x, y])=#
 
     for i in 1:ind.n_genes
         move = ind.genetic_code[i].value
 
-        if move == 1
-            y -= 1
-        elseif move == 2
-            x += 1
-        elseif move == 3
-            y += 1
-        elseif move == 4
-            x -= 1
-        end
+        crossroads = map[x - 1, y + 0] +
+                     map[x + 1, y + 0] +
+                     map[x + 0, y - 1] +
+                     map[x + 0, y + 1]
 
-        if x < 1 || x > sizex || y < 1 || y > sizey
-            break
-        elseif !invalid_path && map[x, y] == 0
-            invalid_path = true
-        end
+        #=@printf("Trying move: %2d  crossroads = %2d\n", move, crossroads)=#
 
-        if x == xf && y == yf
-            complete_path = true
+        if crossroads == 1
             break
         end
 
-        if invalid_path
-            break
-        else
+        if crossroads > 2
+            oldx, oldy = x, y
+
+            if move == 1
+                y -= 1
+            elseif move == 2
+                x += 1
+            elseif move == 3
+                y += 1
+            elseif move == 4
+                x -= 1
+            end
+
+            if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0# || used[x, y] != 1
+                x, y = oldx, oldy
+            else
+                obj += step_point * 5
+                used[x, y] += 2
+                #=@printf(STDERR, "pos = %2d %2d: %2d  WITH TURN\n", x, y, map[x, y])=#
+            end
+        end
+
+        while crossroads == 2
+            oldx, oldy = x, y
+
+            if move == 1
+                y -= 1
+            elseif move == 2
+                x += 1
+            elseif move == 3
+                y += 1
+            elseif move == 4
+                x -= 1
+            end
+
+            if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0 #|| used[x, y] != 1
+                x, y = oldx, oldy
+                break
+            end
+
             used[x, y] += 2
+            #=obj += step_point=#
+
+            #=@printf(STDERR, "pos = %2d %2d: %2d FORWARD\n", x, y, map[x, y])=#
+        end
+
+        if crossroads == 2
+            #=obj += step_point=#
         end
     end
 
@@ -77,9 +114,18 @@ function path_length( ind :: _individual )
     xs, ys =  11,  2   # start pos
     xf, yf =  2 , 21   # end pos
 
+    obj = 0
+    step_point = 0
+
+    complete_path = false
+    len = 0
+
     sizex, sizey = size(map)
 
-    used = zeros(size(map))
+    used = deepcopy(map)
+
+    used[xs, ys] = -1
+    used[xf, yf] = -1
 
     x, y = xs, ys
 
@@ -87,57 +133,86 @@ function path_length( ind :: _individual )
 
     invalid_path = false
     complete_path = false
-    @printf(STDERR, "\npos = %2d %2d: %2d\n", x, y, map[x, y])
+    #=@printf(STDERR, "\npos = %2d %2d: %2d\n", x, y, map[x, y])=#
 
     for i in 1:ind.n_genes
         move = ind.genetic_code[i].value
 
-        if move == 1
-            y -= 1
-        elseif move == 2
-            x += 1
-        elseif move == 3
-            y += 1
-        elseif move == 4
-            x -= 1
-        else
-            println(move)
-            throw("invalid move:")
-        end
+        crossroads = map[x - 1, y + 0] +
+                     map[x + 1, y + 0] +
+                     map[x + 0, y - 1] +
+                     map[x + 0, y + 1]
 
-        if x < 1 || x > sizex || y < 1 || y > sizey
-            @printf(STDERR, "OOB!\n")
-            break
-        elseif !invalid_path && map[x, y] == 0
-            invalid_path = true
-        end
+        #=@printf("Trying move: %2d  crossroads = %2d\n", move, crossroads)=#
 
-        @printf(STDERR, "move = %2d - pos = %2d %2d: %2d\n", move, x, y, map[x, y])
-
-        if invalid_path
-            #=@printf(STDERR, "Invalid path penalty\n")=#
-        else
-            #=@printf(STDERR, "Valid path so far!\n")=#
-        end
-
-        if x == xf && y == yf
-            complete_path = true
-            #=@printf(STDERR, "Complete path!\n")=#
+        if crossroads == 1
             break
         end
 
-        if invalid_path
-            @printf(STDERR, "Invalid Path!\n")
-            break
-        else
-            len += 1
-            #=@printf(STDERR, "%d ", move)=#
+        if crossroads > 2
+            oldx, oldy = x, y
+
+            if move == 1
+                y -= 1
+            elseif move == 2
+                x += 1
+            elseif move == 3
+                y += 1
+            elseif move == 4
+                x -= 1
+            end
+
+            if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0# || used[x, y] != 1
+                x, y = oldx, oldy
+            else
+                len += 1
+                obj += step_point * 5
+                used[x, y] += 2
+                #=@printf(STDERR, "pos = %2d %2d: %2d  WITH TURN\n", x, y, map[x, y])=#
+            end
+
+            if x == xf && y == yf
+                complete_path = true
+                break
+            end
+        end
+
+        while crossroads == 2
+            oldx, oldy = x, y
+
+            if move == 1
+                y -= 1
+            elseif move == 2
+                x += 1
+            elseif move == 3
+                y += 1
+            elseif move == 4
+                x -= 1
+            end
+
+            if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0 #|| used[x, y] != 1
+                x, y = oldx, oldy
+                break
+            else
+                len += 1
+            end
+
+            if x == xf && y == yf
+                complete_path = true
+                break
+            end
+
+            used[x, y] += 2
+            #=obj += step_point=#
+
+            #=@printf(STDERR, "pos = %2d %2d: %2d FORWARD\n", x, y, map[x, y])=#
+        end
+
+        if crossroads == 2
+            #=obj += step_point=#
         end
     end
 
-    @printf(STDERR, "\n")
-
-    #=ind.obj_f = obj=#
     return len, complete_path
 end
 

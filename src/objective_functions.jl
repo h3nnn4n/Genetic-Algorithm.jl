@@ -1,4 +1,5 @@
 include("types.jl")
+include("utils.jl")
 
 #=img = load("lena2.png")=#
 #=img = load("lena3.png")=#
@@ -29,70 +30,83 @@ function objf_path( ind :: _individual )
     for i in 1:ind.n_genes
         move = ind.genetic_code[i].value
 
-        if move == 0
-        elseif move == 1
-            y -= 1
-        elseif move == 2
-            x += 1
-        elseif move == 3
-            y += 1
-        elseif move == 4
-            x -= 1
-        else
-            println(move)
-            throw("invalid move:")
+        crossroads = map[x - 1, y + 0] +
+                     map[x + 1, y + 0] +
+                     map[x + 0, y - 1] +
+                     map[x + 0, y + 1]
+
+        #=@printf("Trying move: %2d  crossroads = %2d\n", move, crossroads)=#
+
+        if crossroads == 1
+            break
         end
 
-        if x < 1 || x > sizex || y < 1 || y > sizey
-            obj += oob_penalty
-        elseif !invalid_path && map[x, y] == 0
-            invalid_path = true
-        end
+        if crossroads > 2
+            oldx, oldy = x, y
 
-        #=@printf(STDERR, "pos = %2d %2d: %2d\n", x, y, map[x, y])=#
+            if move == 1
+                y -= 1
+            elseif move == 2
+                x += 1
+            elseif move == 3
+                y += 1
+            elseif move == 4
+                x -= 1
+            end
 
-        if i > 1
-            if move == 1 && ind.genetic_code[i-1].value == 3
-                obj += neutral_move_penalty
-            elseif move == 3 && ind.genetic_code[i-1].value == 1
-                obj += neutral_move_penalty
-            elseif move == 2 && ind.genetic_code[i-1].value == 4
-                obj += neutral_move_penalty
-            elseif move == 4 && ind.genetic_code[i-1].value == 2
-                obj += neutral_move_penalty
+            if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0 # || used[x, y] != 1
+                x, y = oldx, oldy
+            else
+                obj += step_point * 5
+
+                if used[x, y] > 1
+                    obj -= step_point * used[x, y]
+                else
+                    obj += step_point
+                end
+
+                used[x, y] += 2
+                #=@printf(STDERR, "pos = %2d %2d: %2d  WITH TURN\n", x, y, map[x, y])=#
             end
         end
 
-        obj += neutral_move_penalty * used[x, y]
-        used[x, y] += 1
+        while crossroads == 2
+            oldx, oldy = x, y
 
-        if used[x, y] > 2
-            invalid_path = true
-            @printf(STDERR, "Cycling\n")
+            if move == 1
+                y -= 1
+            elseif move == 2
+                x += 1
+            elseif move == 3
+                y += 1
+            elseif move == 4
+                x -= 1
+            end
+
+            if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0  #|| used[x, y] != 1
+                x, y = oldx, oldy
+                break
+            end
+
+            if used[x, y] > 1
+                obj -= step_point * used[x, y]
+            else
+                obj += step_point
+            end
+
+            used[x, y] += 2
+
+            #=@printf(STDERR, "pos = %2d %2d: %2d FORWARD\n", x, y, map[x, y])=#
         end
 
-        if invalid_path
-            obj += invalid_path_penalty
-            @printf(STDERR, "Invalid path penalty\n")
-        else
-            obj += step_point
-            @printf(STDERR, "cost: %3d\n\n", obj)
-            @printf(STDERR, "Valid path so far!\n")
-        end
-
-        if x == xf && y == yf
-            obj += complete_point
-            @printf(STDERR, "Complete path!\n")
-            break
-        end
-
-        if invalid_path
-            @printf(STDERR, "Invalid GTFO!\n")
-            break
+        if crossroads == 2
+            #=obj += step_point=#
         end
     end
 
-    @printf(STDERR, "cost: %3d\n\n", obj)
+    #=@printf(STDERR, "cost: %3d\n\n", obj)=#
+
+    #=print_path( ind )=#
 
     ind.obj_f = obj
 end
@@ -260,6 +274,10 @@ end
 
 function fitness_identity( _, ind :: _individual )
     ind.fitness = ind.obj_f
+end
+
+function fitness_normalized_ub( pop :: _population, ind :: _individual )
+    ind.fitness = ind.obj_f / pop.max_objf
 end
 
 function fitness_sphere( pop :: _population, ind :: _individual )
