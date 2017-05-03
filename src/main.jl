@@ -18,11 +18,11 @@ function main()
     pop.size = 50
     #=pop.n_genes = res*res=#
     pop.n_genes = res
-    pop.mchance = 0.01
-    pop.cchance = 0.55
+    pop.mchance = 0.03
+    pop.cchance = 0.95
     pop.tourney_size = 2
     #=pop.kelitism = Int(ceil((res*res) * 0.15))=#
-    pop.kelitism = 0
+    pop.kelitism = 1
 
     #=pop.crossover_function = crossover_pmx=#
     #=pop.crossover_function = crossover_uniform=#
