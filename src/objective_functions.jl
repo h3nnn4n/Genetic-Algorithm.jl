@@ -4,6 +4,99 @@ include("types.jl")
 #=img = load("lena3.png")=#
 #=img = load("box.png")=#
 
+map = readdlm("map.txt")
+
+function objf_path( ind :: _individual )
+    obj = 0.0
+
+    oob_penalty = -5
+    invalid_path_penalty = -1
+    step_point = 2
+    complete_point = 50
+    neutral_move_penalty = -2
+
+    xs, ys =  11,  2   # start pos
+    xf, yf =  2 , 21   # end pos
+
+    sizex, sizey = size(map)
+    used = deepcopy(map)
+
+    x, y = xs, ys
+
+    invalid_path = false
+    #=@printf(STDERR, "\npos = %2d %2d: %2d\n", x, y, map[x, y])=#
+
+    for i in 1:ind.n_genes
+        move = ind.genetic_code[i].value
+
+        if move == 0
+        elseif move == 1
+            y -= 1
+        elseif move == 2
+            x += 1
+        elseif move == 3
+            y += 1
+        elseif move == 4
+            x -= 1
+        else
+            println(move)
+            throw("invalid move:")
+        end
+
+        if x < 1 || x > sizex || y < 1 || y > sizey
+            obj += oob_penalty
+        elseif !invalid_path && map[x, y] == 0
+            invalid_path = true
+        end
+
+        #=@printf(STDERR, "pos = %2d %2d: %2d\n", x, y, map[x, y])=#
+
+        if i > 1
+            if move == 1 && ind.genetic_code[i-1].value == 3
+                obj += neutral_move_penalty
+            elseif move == 3 && ind.genetic_code[i-1].value == 1
+                obj += neutral_move_penalty
+            elseif move == 2 && ind.genetic_code[i-1].value == 4
+                obj += neutral_move_penalty
+            elseif move == 4 && ind.genetic_code[i-1].value == 2
+                obj += neutral_move_penalty
+            end
+        end
+
+        obj += neutral_move_penalty * used[x, y]
+        used[x, y] += 1
+
+        if used[x, y] > 2
+            invalid_path = true
+            @printf(STDERR, "Cycling\n")
+        end
+
+        if invalid_path
+            obj += invalid_path_penalty
+            @printf(STDERR, "Invalid path penalty\n")
+        else
+            obj += step_point
+            @printf(STDERR, "cost: %3d\n\n", obj)
+            @printf(STDERR, "Valid path so far!\n")
+        end
+
+        if x == xf && y == yf
+            obj += complete_point
+            @printf(STDERR, "Complete path!\n")
+            break
+        end
+
+        if invalid_path
+            @printf(STDERR, "Invalid GTFO!\n")
+            break
+        end
+    end
+
+    @printf(STDERR, "cost: %3d\n\n", obj)
+
+    ind.obj_f = obj
+end
+
 function objf_nqueens_int( ind :: _individual )
     obj = 0.0
 
@@ -181,4 +274,18 @@ function fitness_sphere( pop :: _population, ind :: _individual )
         throw("kek")
     end
 
+end
+
+function fitness_super_normalizer( pop :: _population, ind :: _individual )
+    fit = ind.obj_f
+    fit -= pop.min_objf
+    fit = fit / (pop.max_objf - pop.min_objf)
+
+    #=ind.fitness = (1.0 - fit)=#
+    ind.fitness = fit
+
+    if isnan(ind.fitness)
+        println("$(pop.max_objf) 0.0")
+        throw("kek")
+    end
 end
