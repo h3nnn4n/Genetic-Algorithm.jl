@@ -27,17 +27,44 @@ function get_relative_fit( data )
     return [ data[i] / total for i in 1:length(data) ]
 end
 
+function get_scaled_fit( C, data)
+    a, b = get_alpha_beta(C, data)
+    return [ data[i] * a + b for i in 1:length(data) ]
+end
+
 println("\nTeste1")
-println(get_relative_fit(teste1))
-a, b = get_alpha_beta(2.0, teste1)
+C = 2.0
+data = teste1
+rawfr = get_relative_fit(data)
+for d in rawfr @printf("%4.2f ", d) end; println()
+a, b = get_alpha_beta(C, data)
 @printf("α = %f, β = %f\n", a, b)
-a, b = get_alpha_beta(1.2, teste1)
+newf = get_scaled_fit(C, data)
+for d in newf @printf("%4.2f ", d) end; println()
+for d in get_relative_fit(newf) @printf("%4.2f ", d) end; println()
+
+C = 1.2
+a, b = get_alpha_beta(1.2, data)
 @printf("α = %f, β = %f\n", a, b)
+newf = get_scaled_fit(C, data)
+for d in newf @printf("%4.2f ", d) end; println()
+for d in get_relative_fit(newf) @printf("%4.2f ", d) end; println()
 
 println("\nTeste2")
-println(get_relative_fit(teste2))
-a, b = get_alpha_beta(2.0, teste2)
+C = 2.0
+data = teste2
+rawfr = get_relative_fit(data)
+for d in rawfr @printf("%4.2f ", d) end; println()
+a, b = get_alpha_beta(2.0, data)
 @printf("α = %f, β = %f\n", a, b)
-a, b = get_alpha_beta(1.2, teste2)
+newf = get_scaled_fit(C, data)
+for d in newf @printf("%4.2f ", d) end; println()
+for d in get_relative_fit(newf) @printf("%4.2f ", d) end; println()
+
+C = 1.2
+a, b = get_alpha_beta(1.2, data)
 @printf("α = %f, β = %f\n", a, b)
+newf = get_scaled_fit(C, data)
+for d in newf @printf("%4.2f ", d) end; println()
+for d in get_relative_fit(newf) @printf("%4.2f ", d) end; println()
 
