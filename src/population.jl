@@ -8,6 +8,7 @@ function spawn_empty_population()
     new_pop = _population(0, 0, 0, 0,
                          [],
                          0, 0, 0, 0,
+                         0.0, 0.0, 0.0, 0.0,
                          _ -> _, _ -> _, _ -> _, _ -> _, _ -> _)
 end
 

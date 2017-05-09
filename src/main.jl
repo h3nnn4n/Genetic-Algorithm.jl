@@ -13,25 +13,31 @@ Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 
 function main()
     #=println("Starting")=#
-    res = 750
+    res = 100
     pop = spawn_empty_population()
     pop.size = 50
+    pop.max_iter = 1000 * 400
     #=pop.n_genes = res*res=#
     pop.n_genes = res
     pop.mchance = 0.02
-    pop.cchance = 0.85
+    pop.cchance = 0.90
     pop.tourney_size = 2
     #=pop.kelitism = Int(ceil((res*res) * 0.15))=#
     pop.kelitism = 0
+    #=pop.Cfirst   = 1.2=#
+    #=pop.Clast    = 2.0=#
+    pop.Cfirst   = 2.0
+    pop.Clast    = 1.2
 
     #=pop.crossover_function = crossover_pmx=#
     #=pop.crossover_function = crossover_uniform=#
-    #=pop.crossover_function = crossover_rand_points=#
-    pop.crossover_function = crossover_one_point
+    pop.crossover_function = crossover_rand_points
+    #=pop.crossover_function = crossover_one_point=#
     #=pop.crossover_function = crossover_blx=#
 
-    pop.selection_function = selection_ktourney
+    #=pop.selection_function = selection_ktourney=#
     #=pop.selection_function = selection_roulette=#
+    pop.selection_function = selection_roulette_linear_scalling
     #=pop.selection_function = selection_random=#
 
     #=pop.objective_function = objf_alternating_parity=#
@@ -73,8 +79,9 @@ function main()
     #=evaluate(pop)=#
     #=print_pop(pop)=#
 
-    for iter in 1:5000
+    for iter in 1:pop.max_iter
         evaluate(pop)
+        pop.Citer = 1/pop.max_iter
 
         for i in 1:pop.size
             if pop.individuals[i].fitness > best_ever.fitness

@@ -5,7 +5,7 @@ include("utils.jl")
 #=img = load("lena3.png")=#
 #=img = load("box.png")=#
 
-map = readdlm("map.txt")
+map = readdlm("../map.txt")
 
 eu_dist( x, y, a, b ) = sqrt(( x - a )^2 + ( y - b )^2)
 
@@ -18,7 +18,7 @@ function objf_path( ind :: _individual )
     oob_penalty = -5
     invalid_path_penalty = -1
     step_point = 2
-    complete_point = 50
+    complete_point = 500
     neutral_move_penalty = -2
 
     xs, ys =  11,  2   # start pos
@@ -46,6 +46,11 @@ function objf_path( ind :: _individual )
             #=break=#
         #=end=#
 
+        if x == xf && y == yf
+            obj += complete_point
+            break
+        end
+
         if crossroads > 2 || crossroads == 1
             oldx, oldy = x, y
 
@@ -65,7 +70,7 @@ function objf_path( ind :: _individual )
                 obj += step_point * 5
 
                 if used[x, y] > 1
-                    obj -= step_point * used[x, y]
+                    obj -= (step_point * used[x, y]) ^ 2
                 else
                     obj += step_point
                 end
@@ -93,10 +98,10 @@ function objf_path( ind :: _individual )
                 end
 
                 if used[x, y] > 1
-                    obj -= step_point * used[x, y]
+                    obj -= (step_point * used[x, y]) ^ 2
                 else
-                    obj += step_point
-                    #=obj += (45 - eu_dist(x, y, xf, yf)) * .25=#
+                    #=obj += step_point=#
+                    obj += 2 + ((45 - eu_dist(x, y, xf, yf)) / 45)
                 end
 
                 used[x, y] += 2
@@ -315,7 +320,8 @@ function fitness_super_normalizer( pop :: _population, ind :: _individual )
     ind.fitness = fit
 
     if isnan(ind.fitness)
-        println("$(pop.max_objf) 0.0")
-        throw("kek")
+        ind.fitness = rand()
+        #=println("$(pop.max_objf) 0.0")=#
+        #=throw("kek")=#
     end
 end

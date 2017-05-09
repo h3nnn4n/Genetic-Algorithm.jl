@@ -26,6 +26,10 @@ type _population
     max_objf :: Float32
     tourney_size :: Int
     kelitism :: Int
+    max_iter :: Int
+    Cfirst   :: Float32
+    Clast    :: Float32
+    Citer    :: Float32
     crossover_function
     selection_function
     mutation_function

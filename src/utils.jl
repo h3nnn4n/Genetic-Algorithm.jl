@@ -249,19 +249,19 @@ function print_mapppp( used )
     for i in 1:x
         for j in 1:y
             if used[i, j] == 0
-                @printf("X ")
+                @printf(STDERR, "X ")
                 #=@printf("  ")=#
             elseif used[i, j] == 1
-                @printf("  ")
+                @printf(STDERR, "  ")
             elseif used[i, j] == 3
-                @printf(". ")
+                @printf(STDERR, ". ")
             elseif used[i, j] == -1
-                @printf("* ")
+                @printf(STDERR, "* ")
             else
-                @printf("+ ")
+                @printf(STDERR, "+ ")
             end
         end
-        @printf("\n")
+        @printf(STDERR, "\n")
     end
 end
 
