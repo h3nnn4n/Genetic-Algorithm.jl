@@ -14,6 +14,8 @@ end
 function selection_roulette_linear_scalling( pop :: _population )
     C = (pop.Clast - pop.Cfirst) * pop.Citer + pop.Cfirst
 
+    #=@printf(STDERR, "C: %4.2f  Last: %4.2f  First: %4.2f  iter: %4.2f  \n", C, pop.Clast, pop.Cfirst, pop.Citer)=#
+
     tfit = [ (x -> x.fitness)(f) for f in pop.individuals ]
     #=print(tfit)=#
     a, b = get_alpha_beta(C, tfit)

@@ -11,62 +11,7 @@ include("utils.jl")
 
 Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 
-function main()
-    #=println("Starting")=#
-    res = 100
-    pop = spawn_empty_population()
-    pop.size = 50
-    pop.max_iter = 1000 * 400
-    #=pop.n_genes = res*res=#
-    pop.n_genes = res
-    pop.mchance = 0.02
-    pop.cchance = 0.90
-    pop.tourney_size = 2
-    #=pop.kelitism = Int(ceil((res*res) * 0.15))=#
-    pop.kelitism = 0
-    #=pop.Cfirst   = 1.2=#
-    #=pop.Clast    = 2.0=#
-    pop.Cfirst   = 2.0
-    pop.Clast    = 1.2
-
-    #=pop.crossover_function = crossover_pmx=#
-    #=pop.crossover_function = crossover_uniform=#
-    pop.crossover_function = crossover_rand_points
-    #=pop.crossover_function = crossover_one_point=#
-    #=pop.crossover_function = crossover_blx=#
-
-    #=pop.selection_function = selection_ktourney=#
-    #=pop.selection_function = selection_roulette=#
-    pop.selection_function = selection_roulette_linear_scalling
-    #=pop.selection_function = selection_random=#
-
-    #=pop.objective_function = objf_alternating_parity=#
-    #=pop.objective_function = objf_alternating_bit=#
-    #=pop.objective_function = objf_sphere=#
-    #=pop.objective_function = objf_rosen=#
-    #=pop.objective_function = objf_nqueens=#
-    #=pop.objective_function = objf_nqueens_int=#
-    #=pop.objective_function = objf_img=#
-    pop.objective_function = objf_path
-
-    #=pop.fitness_function   = fitness_sphere=#
-    #=pop.fitness_function   = fitness_nqueens=#
-    pop.fitness_function   = fitness_identity
-    #=pop.fitness_function   = fitness_normalized_ub=#
-    #=pop.fitness_function   = fitness_super_normalizer=#
-
-    for i in 1:pop.size
-        new_guy = _individual(pop.n_genes, 0, 0, [])
-        for j in 1:pop.n_genes
-            #=new_gene = _gene(real, 0, 1.0, 0.0)=#
-            #=new_gene = _gene(bool, false, true, 0.0)=#
-            new_gene = _gene(int, 1, 4, 0)
-            #=new_gene = _gene(permut, 1, res, 0)=#
-            push!(new_guy.genetic_code, new_gene)
-        end
-        push!(pop.individuals, new_guy)
-    end
-
+function evolutionary_loop( pop :: _population )
     init_population(pop)
 
     pop.objective_function(pop.individuals[1])
@@ -81,7 +26,7 @@ function main()
 
     for iter in 1:pop.max_iter
         evaluate(pop)
-        pop.Citer = 1/pop.max_iter
+        pop.Citer = iter / pop.max_iter
 
         for i in 1:pop.size
             if pop.individuals[i].fitness > best_ever.fitness
@@ -120,15 +65,71 @@ function main()
         #=save(name, img_final2)=#
     end
 
-    #=for i in 1:res=#
-        #=@printf(STDERR, "%d ", best_ever.genetic_code[i].value)=#
-    #=end=#
-    #=@printf(STDERR, "\n")=#
+    return pop, best_ever
+end
 
-    len, full = path_length(best_ever)
-    @printf(STDERR, "len = %3d   complete = %s\n", len, full ? "yes" : "no")
+function main()
+    #=println("Starting")=#
+    res = 100
+    pop = spawn_empty_population()
+    pop.size = 50
+    pop.max_iter = 500
+    #=pop.n_genes = res*res=#
+    pop.n_genes = res
+    pop.mchance = 0.02
+    pop.cchance = 0.90
+    pop.tourney_size = 2
+    #=pop.kelitism = Int(ceil((res*res) * 0.15))=#
+    pop.kelitism = 1
+    pop.Cfirst   = 1.2
+    pop.Clast    = 2.0
+    pop.Cfirst   = 2.0
+    pop.Clast    = 1.2
 
-    print_path(best_ever)
+    #=pop.crossover_function = crossover_pmx=#
+    #=pop.crossover_function = crossover_uniform=#
+    #=pop.crossover_function = crossover_rand_points=#
+    #=pop.crossover_function = crossover_one_point=#
+    pop.crossover_function = crossover_blx
+
+    #=pop.selection_function = selection_ktourney=#
+    pop.selection_function = selection_roulette
+    #=pop.selection_function = selection_roulette_linear_scalling=#
+    #=pop.selection_function = selection_random=#
+
+    #=pop.objective_function = objf_alternating_parity=#
+    #=pop.objective_function = objf_alternating_bit=#
+    #=pop.objective_function = objf_sphere=#
+    pop.objective_function = objf_rosen
+    #=pop.objective_function = objf_nqueens=#
+    #=pop.objective_function = objf_nqueens_int=#
+    #=pop.objective_function = objf_img=#
+    #=pop.objective_function = objf_path=#
+
+    pop.fitness_function   = fitness_sphere
+    #=pop.fitness_function   = fitness_nqueens=#
+    #=pop.fitness_function   = fitness_identity=#
+    #=pop.fitness_function   = fitness_normalized_ub=#
+    #=pop.fitness_function   = fitness_super_normalizer=#
+
+    for i in 1:pop.size
+        new_guy = _individual(pop.n_genes, 0, 0, [])
+        for j in 1:pop.n_genes
+            new_gene = _gene(real, -2.6, 2.6, 0.0)
+            #=new_gene = _gene(bool, false, true, 0.0)=#
+            #=new_gene = _gene(int, 1, 4, 0)=#
+            #=new_gene = _gene(permut, 1, res, 0)=#
+            push!(new_guy.genetic_code, new_gene)
+        end
+        push!(pop.individuals, new_guy)
+    end
+
+    result, best_ever = evolutionary_loop( pop )
+
+    #=len, full = path_length(best_ever)=#
+    #=@printf(STDERR, "len = %3d   complete = %s\n", len, full ? "yes" : "no")=#
+
+    #=print_path(best_ever)=#
 
     return
 end

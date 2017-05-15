@@ -5,7 +5,7 @@ include("utils.jl")
 #=img = load("lena3.png")=#
 #=img = load("box.png")=#
 
-map = readdlm("../map.txt")
+map = readdlm("map.txt")
 
 eu_dist( x, y, a, b ) = sqrt(( x - a )^2 + ( y - b )^2)
 
