@@ -4,6 +4,8 @@
 #using TestImages
 
 include("types.jl")
+include("elitism.jl")
+include("gengap.jl")
 include("population.jl")
 include("selection.jl")
 include("objective_functions.jl")
@@ -35,15 +37,18 @@ function evolutionary_loop( pop :: _population )
             end
         end
 
-        genGap = gengap_get(pop)
         elite = elitism_get(pop)
+
+        print("$iter ")
+        print_status(pop)
+
+        shuffle!(pop.individuals)
+
+        genGap = gengap_get(pop)
 
         #=if iter % 100 == 0=#
             #=@printf(STDERR, "%d %f\n", iter, best_ever.fitness)=#
         #=end=#
-
-        print("$iter ")
-        print_status(pop)
         #=@printf("min, max = %f %f\n", pop.min_objf, pop.max_objf)=#
 
         #=print_pop(pop)=#
@@ -60,6 +65,7 @@ function evolutionary_loop( pop :: _population )
         mutation(pop)
 
         gengap_put_back(pop, genGap)
+
         elitism_put_back(pop, elite)
 
         #=name = @sprintf("kappa_%02d.png", iter)=#
@@ -74,14 +80,14 @@ end
 
 function main()
     #=println("Starting")=#
-    res = 16
-    nbits = 4
+    res = 20
+    nbits = 3
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 1000
+    pop.max_iter = 500
     #=pop.n_genes = res*res=#
     pop.n_genes = res * nbits
-    pop.mchance = 0.02
+    pop.mchance = 0.01
     pop.cchance = 0.90
     pop.tourney_size = 2
     pop.kelitism = Int(ceil((res*res) * 0.10))
@@ -90,8 +96,8 @@ function main()
     pop.Cfirst   = 1.2
     pop.Clast    = 2.0
 
-    pop.genGapfirst   =-0.9
-    pop.genGaplast    = 0.2
+    pop.genGapfirst   = 1.0
+    pop.genGaplast    = 0.0
     pop.genGapiter    = 0.0
 
     change_f3_size(res)
@@ -104,8 +110,8 @@ function main()
     #=pop.crossover_function = crossover_blx=#
 
     #=pop.selection_function = selection_ktourney=#
-    #=pop.selection_function = selection_roulette=#
-    pop.selection_function = selection_roulette_linear_scalling
+    pop.selection_function = selection_roulette
+    #=pop.selection_function = selection_roulette_linear_scalling=#
     #=pop.selection_function = selection_random=#
 
     #=pop.objective_function = objf_alternating_parity=#
@@ -117,8 +123,8 @@ function main()
     #=pop.objective_function = objf_img=#
     #=pop.objective_function = objf_path=#
     #=pop.objective_function = objf_f3=#
-    #=pop.objective_function = objf_f3s=#
-    pop.objective_function = objf_deceptiveN
+    pop.objective_function = objf_f3s
+    #=pop.objective_function = objf_deceptiveN=#
 
     #=pop.fitness_function   = fitness_sphere=#
     #=pop.fitness_function   = fitness_nqueens=#
@@ -144,7 +150,7 @@ function main()
     genes = [(x -> x.value)(i) for i in best_ever.genetic_code]
 
     for i in genes
-        print("$(i?:1:0)")
+        #=print("$(i?:1:0)")=#
         #=print("$(i?:1:0) ")=#
     end
     println()
