@@ -5,9 +5,79 @@ include("utils.jl")
 #=img = load("lena3.png")=#
 #=img = load("box.png")=#
 
+f3_size = 0
+deceptiveN_size = 0
+deceptiveN_nbits = 0
+
 map = readdlm("map.txt")
 
 eu_dist( x, y, a, b ) = sqrt(( x - a )^2 + ( y - b )^2)
+
+function change_deceptiveN_size( nsize :: Int, nbits :: Int )
+    global deceptiveN_size  = nsize
+    global deceptiveN_nbits = nbits
+end
+
+function change_f3_size( nsize :: Int )
+    global f3_size = nsize
+end
+
+function eval_f3( vet )
+    if     reduce(&, true, vet .== [false, false, false])
+        return 28
+    elseif reduce(&, true, vet .== [false, false, true ])
+        return 26
+    elseif reduce(&, true, vet .== [false, true , false])
+        return 22
+    elseif reduce(&, true, vet .== [true , false, false])
+        return 14
+    elseif reduce(&, true, vet .== [true , true , true ])
+        return 30
+    else
+        return 0
+    end
+
+    return 0
+end
+
+function objf_f3( ind :: _individual )
+    obj = 0
+    gens = [(x -> x.value)(i) for i in ind.genetic_code]
+
+    for i in 1:f3_size
+        obj += eval_f3(gens[(i-1)*3+1:i*3])
+    end
+
+    ind.obj_f = obj
+end
+
+function objf_f3s( ind :: _individual )
+    obj = 0
+    gens = [(x -> x.value)(i) for i in ind.genetic_code]
+
+    for i in 1:f3_size
+        obj += eval_f3([gens[i], gens[i + 10], gens[i+20]])
+    end
+
+    ind.obj_f = obj
+end
+
+function objf_deceptiveN( ind :: _individual )
+    obj = 0
+    gens = [(x -> x.value)(i) for i in ind.genetic_code]
+
+    for i in 1:deceptiveN_size
+        v = sum(gens[(i-1) * deceptiveN_nbits + 1: i * deceptiveN_nbits])
+
+        if v == 0
+            obj += deceptiveN_nbits + 1
+        else
+            obj += v
+        end
+    end
+
+    ind.obj_f = obj
+end
 
 function objf_path( ind :: _individual )
     #=map_magic(map)=#
@@ -64,7 +134,7 @@ function objf_path( ind :: _individual )
                 x -= 1
             end
 
-            if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0 # || used[x, y] != 1
+            if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0 || used[x, y] != 1
                 x, y = oldx, oldy
             else
                 obj += step_point * 5
@@ -92,7 +162,7 @@ function objf_path( ind :: _individual )
                     x -= 1
                 end
 
-                if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0  #|| used[x, y] != 1
+                if x < 1 || x > sizex || y < 1 || y > sizey || map[x, y] == 0 || used[x, y] != 1
                     x, y = oldx, oldy
                     break
                 end
@@ -101,7 +171,7 @@ function objf_path( ind :: _individual )
                     obj -= (step_point * used[x, y]) ^ 2
                 else
                     #=obj += step_point=#
-                    obj += 2 + ((45 - eu_dist(x, y, xf, yf)) / 45)
+                    obj += 2# + ((45 - eu_dist(x, y, xf, yf)) / 45)
                 end
 
                 used[x, y] += 2
@@ -123,7 +193,7 @@ function objf_path( ind :: _individual )
         end
     end
 
-    obj /= sum( used )
+    #=obj /= sum( used )=#
 
     ind.obj_f = obj
 end
@@ -291,6 +361,10 @@ end
 
 function fitness_identity( _, ind :: _individual )
     ind.fitness = ind.obj_f
+end
+
+function fitness_normalized_lb( pop :: _population, ind :: _individual )
+    ind.fitness = ind.obj_f - pop.min_objf
 end
 
 function fitness_normalized_ub( pop :: _population, ind :: _individual )

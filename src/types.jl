@@ -30,6 +30,9 @@ type _population
     Cfirst   :: Float32
     Clast    :: Float32
     Citer    :: Float32
+    genGapfirst :: Float32
+    genGaplast  :: Float32
+    genGapiter  :: Float32
     crossover_function
     selection_function
     mutation_function

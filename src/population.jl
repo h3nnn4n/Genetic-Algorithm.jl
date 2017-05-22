@@ -5,11 +5,14 @@ include("selection.jl")
 include("crossover.jl")
 
 function spawn_empty_population()
-    new_pop = _population(0, 0, 0, 0,
-                         [],
-                         0, 0, 0, 0,
-                         0.0, 0.0, 0.0, 0.0,
-                         _ -> _, _ -> _, _ -> _, _ -> _, _ -> _)
+    new_pop = _population(0, 0,
+                          0.0, 0.0,
+                          [],
+                          0.0, 0.0,
+                          0, 0, 0,
+                          0.0, 0.0, 0.0,
+                          0.0, 0.0, 0.0,
+                          _ -> _, _ -> _, _ -> _, _ -> _, _ -> _)
 end
 
 function init_population( pop :: _population )
@@ -149,6 +152,43 @@ function mutation( pop :: _population )
             end
         end
     end
+end
+
+function gengap_get( pop :: _population )
+    if pop.genGapfirst < 0
+        return
+    end
+
+    C = Int(ceil(((pop.genGaplast - pop.genGapfirst) * pop.genGapiter + pop.genGapfirst) * pop.size))
+    # @printf("gengap %d %f\n", C, (pop.genGaplast - pop.genGapfirst) * pop.genGapiter + pop.genGapfirst)
+    s = (pop.individuals)[1:C]
+    x = []
+
+    for i in s
+        push!(x, clone(i))
+    end
+
+    return x
+end
+
+function gengap_put_back( pop :: _population, elite )
+    if pop.genGapfirst < 0
+        return
+    end
+
+    C = Int(ceil(((pop.genGaplast - pop.genGapfirst) * pop.genGapiter + pop.genGapfirst) * pop.size))
+
+    new_guys = []
+
+    for i in pop.individuals[length(elite) + 1:pop.size]
+        push!(new_guys, i)
+    end
+
+    for i in elite
+        push!(new_guys, i)
+    end
+
+    pop.individuals = new_guys
 end
 
 function elitism_get( pop :: _population )

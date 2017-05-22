@@ -27,6 +27,7 @@ function evolutionary_loop( pop :: _population )
     for iter in 1:pop.max_iter
         evaluate(pop)
         pop.Citer = iter / pop.max_iter
+        pop.genGapiter = iter / pop.max_iter
 
         for i in 1:pop.size
             if pop.individuals[i].fitness > best_ever.fitness
@@ -34,6 +35,7 @@ function evolutionary_loop( pop :: _population )
             end
         end
 
+        genGap = gengap_get(pop)
         elite = elitism_get(pop)
 
         #=if iter % 100 == 0=#
@@ -57,7 +59,9 @@ function evolutionary_loop( pop :: _population )
         crossover(pop)
         mutation(pop)
 
+        gengap_put_back(pop, genGap)
         elitism_put_back(pop, elite)
+
         #=name = @sprintf("kappa_%02d.png", iter)=#
 
         #=img_final = [ (Float32(i.value)) for i in best_ever.genetic_code ] # :: Array{Float32}=#
@@ -70,53 +74,64 @@ end
 
 function main()
     #=println("Starting")=#
-    res = 100
+    res = 16
+    nbits = 4
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 500
+    pop.max_iter = 1000
     #=pop.n_genes = res*res=#
-    pop.n_genes = res
+    pop.n_genes = res * nbits
     pop.mchance = 0.02
     pop.cchance = 0.90
     pop.tourney_size = 2
-    #=pop.kelitism = Int(ceil((res*res) * 0.15))=#
+    pop.kelitism = Int(ceil((res*res) * 0.10))
     pop.kelitism = 1
+
     pop.Cfirst   = 1.2
     pop.Clast    = 2.0
-    pop.Cfirst   = 2.0
-    pop.Clast    = 1.2
+
+    pop.genGapfirst   =-0.9
+    pop.genGaplast    = 0.2
+    pop.genGapiter    = 0.0
+
+    change_f3_size(res)
+    change_deceptiveN_size(res, nbits)
 
     #=pop.crossover_function = crossover_pmx=#
     #=pop.crossover_function = crossover_uniform=#
     #=pop.crossover_function = crossover_rand_points=#
-    #=pop.crossover_function = crossover_one_point=#
-    pop.crossover_function = crossover_blx
+    pop.crossover_function = crossover_one_point
+    #=pop.crossover_function = crossover_blx=#
 
     #=pop.selection_function = selection_ktourney=#
-    pop.selection_function = selection_roulette
-    #=pop.selection_function = selection_roulette_linear_scalling=#
+    #=pop.selection_function = selection_roulette=#
+    pop.selection_function = selection_roulette_linear_scalling
     #=pop.selection_function = selection_random=#
 
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
     #=pop.objective_function = objf_sphere=#
-    pop.objective_function = objf_rosen
+    #=pop.objective_function = objf_rosen=#
     #=pop.objective_function = objf_nqueens=#
     #=pop.objective_function = objf_nqueens_int=#
     #=pop.objective_function = objf_img=#
     #=pop.objective_function = objf_path=#
+    #=pop.objective_function = objf_f3=#
+    #=pop.objective_function = objf_f3s=#
+    pop.objective_function = objf_deceptiveN
 
-    pop.fitness_function   = fitness_sphere
+    #=pop.fitness_function   = fitness_sphere=#
     #=pop.fitness_function   = fitness_nqueens=#
-    #=pop.fitness_function   = fitness_identity=#
+    pop.fitness_function   = fitness_identity
     #=pop.fitness_function   = fitness_normalized_ub=#
+    #=pop.fitness_function   = fitness_normalized_lb=#
     #=pop.fitness_function   = fitness_super_normalizer=#
 
     for i in 1:pop.size
         new_guy = _individual(pop.n_genes, 0, 0, [])
         for j in 1:pop.n_genes
-            new_gene = _gene(real, -2.6, 2.6, 0.0)
-            #=new_gene = _gene(bool, false, true, 0.0)=#
+            #=new_gene = _gene(real, -2.6, 2.6, 0.0)=#
+            new_gene = _gene(bool, false, true, 0.0)
             #=new_gene = _gene(int, 1, 4, 0)=#
             #=new_gene = _gene(permut, 1, res, 0)=#
             push!(new_guy.genetic_code, new_gene)
@@ -125,6 +140,14 @@ function main()
     end
 
     result, best_ever = evolutionary_loop( pop )
+
+    genes = [(x -> x.value)(i) for i in best_ever.genetic_code]
+
+    for i in genes
+        print("$(i?:1:0)")
+        #=print("$(i?:1:0) ")=#
+    end
+    println()
 
     #=len, full = path_length(best_ever)=#
     #=@printf(STDERR, "len = %3d   complete = %s\n", len, full ? "yes" : "no")=#
