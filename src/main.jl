@@ -41,8 +41,9 @@ function evolutionary_loop( pop :: _population )
 
         print("$iter ")
         print_status(pop)
+        println(" $(getGap(pop)) ")
 
-        shuffle!(pop.individuals)
+        #=shuffle!(pop.individuals)=#
 
         genGap = gengap_get(pop)
 
@@ -80,15 +81,15 @@ end
 
 function main()
     #=println("Starting")=#
-    res = 20
-    nbits = 3
+    res = 32
+    nbits = 4
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 500
+    pop.max_iter = 1000
     #=pop.n_genes = res*res=#
     pop.n_genes = res * nbits
     pop.mchance = 0.01
-    pop.cchance = 0.90
+    pop.cchance = 0.98
     pop.tourney_size = 2
     pop.kelitism = Int(ceil((res*res) * 0.10))
     pop.kelitism = 1
@@ -123,8 +124,8 @@ function main()
     #=pop.objective_function = objf_img=#
     #=pop.objective_function = objf_path=#
     #=pop.objective_function = objf_f3=#
-    pop.objective_function = objf_f3s
-    #=pop.objective_function = objf_deceptiveN=#
+    #=pop.objective_function = objf_f3s=#
+    pop.objective_function = objf_deceptiveN
 
     #=pop.fitness_function   = fitness_sphere=#
     #=pop.fitness_function   = fitness_nqueens=#

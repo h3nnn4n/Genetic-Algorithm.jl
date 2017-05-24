@@ -1,6 +1,8 @@
 include("types.jl")
 
 function getGap( pop :: _population )
+
+    return Int(ceil(pop.size * .9))
     # Linear
     index = pop.genGapiter
 
@@ -30,8 +32,8 @@ function gengap_get( pop :: _population )
     C = getGap(pop)
     # @printf("gengap %d %f\n", C, (pop.genGaplast - pop.genGapfirst) * pop.genGapiter + pop.genGapfirst)
     #=s = (shuffle(pop.individuals))[pop.kelitism+1:(((pop.kelitism+C) < pop.size) ? pop.kelitism+C : pop.size)]=#
-    #=s = (shuffle(pop.individuals))[1:C]=#
-    s = ((pop.individuals))[1:C]
+    s = (shuffle(pop.individuals))[1:C]
+    #=s = ((pop.individuals))[1:C]=#
 
     for i in s
         push!(x, clone(i))
@@ -53,9 +55,31 @@ function gengap_put_back( pop :: _population, elite )
         push!(new_guys, i)
     end
 
-    for i in pop.individuals[length(elite) + 1:pop.size]
+    for i in pop.individuals[length(elite)+1:pop.size]
         push!(new_guys, i)
     end
+
+    #=for i in pop.individuals[length(elite) + 1:pop.size]=#
+    #=for i in pop.individuals[1:pop.size]=#
+        #=push!(new_guys, i)=#
+    #=end=#
+
+    #=used = 1=#
+
+    #=for a in elite=#
+        #=dist = -1=#
+        #=for b in new_guys=#
+            #=d = distance(a, b) =#
+            #=if distance(a, b) < dist || dist == -1=#
+                #=dist = d=#
+            #=end=#
+        #=end=#
+
+        #=if dist != 0=#
+            #=new_guys[used] = a=#
+            #=used += 1=#
+        #=end=#
+    #=end=#
 
     pop.individuals = new_guys
 end

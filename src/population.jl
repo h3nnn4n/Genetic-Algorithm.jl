@@ -4,6 +4,8 @@ include("types.jl")
 include("selection.jl")
 include("crossover.jl")
 
+distance(a :: _individual, b :: _individual) = mapfoldr((x) -> (x[1].value - x[2].value) ^ 2 , +, collect(zip(a.genetic_code, b.genetic_code)))
+
 function spawn_empty_population()
     new_pop = _population(0, 0,
                           0.0, 0.0,
@@ -100,7 +102,9 @@ function mutation( pop :: _population )
 
     for i in 1:pop.size
         for j in 1:pop.n_genes
-            if rand() < pop.mchance
+            r = rand()
+            #=println(r, pop.mchance)=#
+            if r < pop.mchance
                 if pop.individuals[i].genetic_code[j].gen_type == bool
 
                     pop.individuals[i].genetic_code[j].value = !pop.individuals[i].genetic_code[j].value
@@ -154,8 +158,6 @@ function mutation( pop :: _population )
     end
 end
 
-distance(a :: _individual, b :: _individual) = mapfoldr((x) -> (x[1].value - x[2].value) ^ 2 , +, collect(zip(a.genetic_code, b.genetic_code)))
-
 function get_diversity( pop :: _population )
     d, t = 0, 0
     for i in 2:pop.size, j in 1:i-1
@@ -171,7 +173,7 @@ function print_pop( pop :: _population )
         for j in 1:pop.n_genes
             print("$(pop.individuals[i].genetic_code[j].value) ")
         end
-        println(" = $(pop.individuals[i].fitness) $(pop.individuals[i].obj_f)")
+        print(" = $(pop.individuals[i].fitness) $(pop.individuals[i].obj_f)")
     end
 end
 
@@ -187,5 +189,5 @@ function print_status( pop :: _population )
         end
     end
 
-    @printf("%4.8f %4.8f %4.8f \n", pop.individuals[best_i].fitness, acc/pop.size, get_diversity(pop))
+    @printf("%4.8f %4.8f %4.8f", pop.individuals[best_i].fitness, acc/pop.size, get_diversity(pop))
 end
