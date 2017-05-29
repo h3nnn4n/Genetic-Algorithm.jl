@@ -14,9 +14,9 @@ reset
 #set terminal wxt size 410,250 enhanced font 'Verdana,9' persist
 # png
 #set terminal pngcairo size 1600,600 enhanced font 'Verdana,9'
-#set terminal pngcairo size 650,300 enhanced dashed font 'Verdana,10'
-set terminal pngcairo size 1650,600 enhanced dashed font 'Verdana,10'
-set output 'diversity.png'
+set terminal pngcairo size 650,300 enhanced dashed font 'Verdana,10'
+set terminal pngcairo size 1650,300 enhanced dashed font 'Verdana,10'
+set output 'fitness.png'
 # svg
 #set terminal svg size 410,250 fname 'Verdana, Helvetica, Arial, sans-serif' fsize '9' rounded dashed
 #set output 'nice_web_plot.svg'
@@ -49,19 +49,24 @@ set style line 6 lw 1 lt 1 lc rgb '#E6AB02' # dark banana
 set style line 7 lw 1 lt 1 lc rgb '#A6761D' # dark tan
 set style line 8 lw 1 lt 1 lc rgb '#666666' # dark gray
 
-set key top right
+set key bottom right
 
 set key samplen 4
 
 #set format '$'
 set xlabel 'Geração'
-set ylabel 'Diversidade'
+set ylabel 'Fitness'
 
-set xrange [0:]
+#set yrange [0:1]
 set yrange [0:]
 set xtics rotate by -55
 #set format y "%.0s*10^%T"
 #set format y "%.0tx10^%1T"
 
 plot \
-'log'      u (column(0)):4 t 'Diversity'  w l ls 1, \
+'log'      u (column(0)):2 t 'Best Fitness'   w l ls 1, \
+'log'      u (column(0)):3 t 'Mean'           w l ls 1, \
+'log2'     u (column(0)):2 t 'Best Fitness2'  w l ls 2, \
+'log2'     u (column(0)):3 t 'Mean2'          w l ls 2, \
+'log3'     u (column(0)):2 t 'Best Fitness3'  w l ls 3, \
+'log3'     u (column(0)):3 t 'Mean3'          w l ls 3

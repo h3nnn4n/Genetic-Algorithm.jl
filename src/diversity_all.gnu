@@ -14,8 +14,8 @@ reset
 #set terminal wxt size 410,250 enhanced font 'Verdana,9' persist
 # png
 #set terminal pngcairo size 1600,600 enhanced font 'Verdana,9'
-#set terminal pngcairo size 650,300 enhanced dashed font 'Verdana,10'
-set terminal pngcairo size 1650,600 enhanced dashed font 'Verdana,10'
+set terminal pngcairo size 650,300 enhanced dashed font 'Verdana,10'
+set terminal pngcairo size 1650,300 enhanced dashed font 'Verdana,10'
 set output 'diversity.png'
 # svg
 #set terminal svg size 410,250 fname 'Verdana, Helvetica, Arial, sans-serif' fsize '9' rounded dashed
@@ -65,3 +65,5 @@ set xtics rotate by -55
 
 plot \
 'log'      u (column(0)):4 t 'Diversity'  w l ls 1, \
+'log2'     u (column(0)):4 t 'Diversity2' w l ls 2, \
+'log3'     u (column(0)):4 t 'Diversity3' w l ls 3
