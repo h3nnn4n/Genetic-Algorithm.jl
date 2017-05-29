@@ -4,6 +4,7 @@
 #using TestImages
 
 include("types.jl")
+include("fitness_sharing.jl")
 include("elitism.jl")
 include("gengap.jl")
 include("population.jl")
@@ -28,8 +29,17 @@ function evolutionary_loop( pop :: _population )
 
     for iter in 1:pop.max_iter
         evaluate(pop)
+        oldC = getGap(pop)
         pop.Citer = iter / pop.max_iter
         pop.genGapiter = iter / pop.max_iter
+
+        if oldC != getGap(pop) && pop.genGapfirst > 0 && pop.genGaplast > 0
+            shuffle!(pop.individuals)
+        end
+
+        if pop.fitness_sharing_on
+            fitness_sharing( pop )
+        end
 
         for i in 1:pop.size
             if pop.individuals[i].fitness > best_ever.fitness
@@ -42,8 +52,6 @@ function evolutionary_loop( pop :: _population )
         print("$iter ")
         print_status(pop)
         println(" $(getGap(pop)) ")
-
-        #=shuffle!(pop.individuals)=#
 
         genGap = gengap_get(pop)
 
@@ -85,7 +93,7 @@ function main()
     nbits = 4
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 1000
+    pop.max_iter = 500
     #=pop.n_genes = res*res=#
     pop.n_genes = res * nbits
     pop.mchance = 0.01
@@ -93,6 +101,11 @@ function main()
     pop.tourney_size = 2
     pop.kelitism = Int(ceil((res*res) * 0.10))
     pop.kelitism = 1
+
+    pop.crowding_factor_on = false
+    pop.fitness_sharing_on = true
+    pop.fitness_sharing_sigma = 0.0
+    pop.fitness_sharing_alpha = 0.0
 
     pop.Cfirst   = 1.2
     pop.Clast    = 2.0
@@ -111,8 +124,8 @@ function main()
     #=pop.crossover_function = crossover_blx=#
 
     #=pop.selection_function = selection_ktourney=#
-    pop.selection_function = selection_roulette
-    #=pop.selection_function = selection_roulette_linear_scalling=#
+    #=pop.selection_function = selection_roulette=#
+    pop.selection_function = selection_roulette_linear_scalling
     #=pop.selection_function = selection_random=#
 
     #=pop.objective_function = objf_alternating_parity=#

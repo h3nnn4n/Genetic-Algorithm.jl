@@ -14,6 +14,8 @@ function spawn_empty_population()
                           0, 0, 0,
                           0.0, 0.0, 0.0,
                           0.0, 0.0, 0.0,
+                          false, false,
+                          0.0, 0.0,
                           _ -> _, _ -> _, _ -> _, _ -> _, _ -> _)
 end
 
