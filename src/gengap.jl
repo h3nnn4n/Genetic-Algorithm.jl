@@ -18,11 +18,11 @@ function getGap( pop :: _population )
 end
 
 function gengap_get( pop :: _population )
-    x = []
-
     if pop.genGapfirst < 0
-        return x
+        return []
     end
+
+    x = []
 
     C = getGap(pop)
     s = ((pop.individuals))[1:C]

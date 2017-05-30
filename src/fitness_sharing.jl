@@ -3,12 +3,15 @@ include("population.jl") # To get the distance
 
 function fitness_sharing( pop :: _population )
     dists = zeros(pop.size, pop.size)
+    sd    = zeros(pop.size, pop.size)
 
     max = 0
 
-    for i in 1:pop.size
-        for j in 1:pop.size
-            dists[i, j] = distance(pop.individuals[i], pop.individuals[j])
+    for i in 1:pop.size, j in 1:pop.size
+        if j > i
+            continue
+        else
+            dists[j, i] = dists[i, j] = distance(pop.individuals[i], pop.individuals[j])
         end
     end
 
@@ -16,8 +19,22 @@ function fitness_sharing( pop :: _population )
 
     dists = dists ./ max
 
-    display(dists)
+    for i in 1:pop.size, j in 1:pop.size
+        if j > i
+            continue
+        else
+            if dists[i, j] > pop.fitness_sharing_sigma
+                sd[i, j] = 0.0
+                sd[j, i] = 0.0
+            else
+                sd[i, j] = 1.0 - ((dists[i, j]/pop.fitness_sharing_sigma) ^ pop.fitness_sharing_alpha)
+                sd[j, i] = 1.0 - ((dists[i, j]/pop.fitness_sharing_sigma) ^ pop.fitness_sharing_alpha)
+            end
+        end
+    end
 
-    exit()
+    for i in 1:pop.size
+        pop.individuals[i].fitness = pop.individuals[i].fitness / sum([(sd[i, j]) for j in 1:pop.size])
+    end
 end
 

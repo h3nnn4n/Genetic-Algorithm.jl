@@ -24,11 +24,9 @@ function evolutionary_loop( pop :: _population )
 
     best_ever = pop.individuals[1]
 
-    #=evaluate(pop)=#
-    #=print_pop(pop)=#
-
     for iter in 1:pop.max_iter
         evaluate(pop)
+
         oldC = getGap(pop)
         pop.Citer = iter / pop.max_iter
         pop.genGapiter = iter / pop.max_iter
@@ -42,32 +40,24 @@ function evolutionary_loop( pop :: _population )
         end
 
         for i in 1:pop.size
-            if pop.individuals[i].fitness > best_ever.fitness
-                best_ever = clone(pop.individuals[i])
+            if pop.fitness_sharing_on
+                if pop.individuals[i].obj_f > best_ever.obj_f
+                    best_ever = clone(pop.individuals[i])
+                end
+            else
+                if pop.individuals[i].fitness > best_ever.fitness
+                    best_ever = clone(pop.individuals[i])
+                end
             end
         end
 
         elite = elitism_get(pop)
 
-        print("$iter ")
+        @printf("%6d ", iter)
         print_status(pop)
-        println(" $(getGap(pop)) ")
+        @printf("%8d %4d \n", best_ever.obj_f, getGap(pop))
 
         genGap = gengap_get(pop)
-
-        #=if iter % 100 == 0=#
-            #=@printf(STDERR, "%d %f\n", iter, best_ever.fitness)=#
-        #=end=#
-        #=@printf("min, max = %f %f\n", pop.min_objf, pop.max_objf)=#
-
-        #=print_pop(pop)=#
-        #=println()=#
-
-        #=if iter % 1000 == 0=#
-            #=print_status(pop)=#
-            #=println()=#
-            #=println("$iter")=#
-        #=end=#
 
         selection(pop)
         crossover(pop)
@@ -76,12 +66,6 @@ function evolutionary_loop( pop :: _population )
         gengap_put_back(pop, genGap)
 
         elitism_put_back(pop, elite)
-
-        #=name = @sprintf("kappa_%02d.png", iter)=#
-
-        #=img_final = [ (Float32(i.value)) for i in best_ever.genetic_code ] # :: Array{Float32}=#
-        #=img_final2 = convert(Array{Gray{Float32}}, reshape(img_final, res, res))=#
-        #=save(name, img_final2)=#
     end
 
     return pop, best_ever
@@ -96,21 +80,24 @@ function main()
     pop.max_iter = 500
     #=pop.n_genes = res*res=#
     pop.n_genes = res * nbits
-    pop.mchance = 0.01
+    pop.mchance = 0.005
     pop.cchance = 0.98
     pop.tourney_size = 2
     pop.kelitism = Int(ceil((res*res) * 0.10))
-    pop.kelitism = 1
+    pop.kelitism = 0
+
+    pop.crowding_factor_on = true
+    pop.fitness_sharing_on = true
+    pop.fitness_sharing_sigma = 0.255
+    pop.fitness_sharing_alpha = 1.05
 
     pop.crowding_factor_on = false
-    pop.fitness_sharing_on = true
-    pop.fitness_sharing_sigma = 0.0
-    pop.fitness_sharing_alpha = 0.0
+    #=pop.fitness_sharing_on = false=#
 
     pop.Cfirst   = 1.2
     pop.Clast    = 2.0
 
-    pop.genGapfirst   = 1.0
+    pop.genGapfirst   =-1.0
     pop.genGaplast    = 0.0
     pop.genGapiter    = 0.0
 
@@ -119,13 +106,13 @@ function main()
 
     #=pop.crossover_function = crossover_pmx=#
     #=pop.crossover_function = crossover_uniform=#
-    #=pop.crossover_function = crossover_rand_points=#
-    pop.crossover_function = crossover_one_point
+    pop.crossover_function = crossover_rand_points
+    #=pop.crossover_function = crossover_one_point=#
     #=pop.crossover_function = crossover_blx=#
 
-    #=pop.selection_function = selection_ktourney=#
+    pop.selection_function = selection_ktourney
     #=pop.selection_function = selection_roulette=#
-    pop.selection_function = selection_roulette_linear_scalling
+    #=pop.selection_function = selection_roulette_linear_scalling=#
     #=pop.selection_function = selection_random=#
 
     #=pop.objective_function = objf_alternating_parity=#
@@ -142,10 +129,10 @@ function main()
 
     #=pop.fitness_function   = fitness_sphere=#
     #=pop.fitness_function   = fitness_nqueens=#
-    pop.fitness_function   = fitness_identity
+    #=pop.fitness_function   = fitness_identity=#
     #=pop.fitness_function   = fitness_normalized_ub=#
     #=pop.fitness_function   = fitness_normalized_lb=#
-    #=pop.fitness_function   = fitness_super_normalizer=#
+    pop.fitness_function   = fitness_super_normalizer
 
     for i in 1:pop.size
         new_guy = _individual(pop.n_genes, 0, 0, [])
@@ -163,11 +150,14 @@ function main()
 
     genes = [(x -> x.value)(i) for i in best_ever.genetic_code]
 
-    for i in genes
-        #=print("$(i?:1:0)")=#
+    for i in 1:length(genes)
+        @printf(STDERR, "%d", ((genes[i])?:1:0))
+        if mod(i, nbits) == 0
+            @printf(STDERR, " ")
+        end
         #=print("$(i?:1:0) ")=#
     end
-    println()
+    @printf(STDERR, " = %f\n", best_ever.obj_f)
 
     #=len, full = path_length(best_ever)=#
     #=@printf(STDERR, "len = %3d   complete = %s\n", len, full ? "yes" : "no")=#
@@ -177,4 +167,4 @@ function main()
     return
 end
 
-@time main()
+main()
