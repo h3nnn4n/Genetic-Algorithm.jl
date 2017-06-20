@@ -1,5 +1,5 @@
 include("types.jl")
-include("potato.jl")
+include("linear_scaling.jl")
 
 function selection_random( pop :: _population )
     new_guys = []
