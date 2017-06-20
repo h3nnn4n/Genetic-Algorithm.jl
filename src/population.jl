@@ -69,14 +69,12 @@ function clone( guy :: _individual )
 end
 
 function selection( pop :: _population )
-    #=pop.individuals = pop.selection_function( pop )=#
     pop.selection_function( pop )
-    #=println("after selection")=#
 end
 
 function crossover( pop :: _population )
     new_guys = []
-    for i in 1:pop.size
+    for i in 1:2:pop.size
         p1 = rand(1:pop.size)
         p2 = rand(1:pop.size)
 
@@ -107,9 +105,7 @@ function mutation( pop :: _population )
     for i in 1:pop.size
         for j in 1:pop.n_genes
             r = rand()
-            #=println(r, pop.mchance)=#
             if r < pop.mchance
-                println("hue")
                 if pop.individuals[i].genetic_code[j].gen_type == bool
 
                     pop.individuals[i].genetic_code[j].value = !pop.individuals[i].genetic_code[j].value

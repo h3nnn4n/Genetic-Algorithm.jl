@@ -33,12 +33,10 @@ function evolutionary_loop( pop :: _population )
         pop.genGapiter = iter / pop.max_iter
 
         if oldC != getGap(pop) && pop.genGapfirst > 0 && pop.genGaplast > 0
-            println("SHUFFLE")
             shuffle!(pop.individuals)
         end
 
         if pop.fitness_sharing_on
-            println("SHaring")
             fitness_sharing( pop )
         end
 
@@ -63,9 +61,9 @@ function evolutionary_loop( pop :: _population )
         genGap = gengap_get(pop)
 
         #=println("sel hue", pop.selection_function)=#
-        #=selection(pop)=#
+        selection(pop)
         crossover(pop)
-        #=mutation(pop)=#
+        mutation(pop)
 
         gengap_put_back(pop, genGap)
 
@@ -84,23 +82,23 @@ function main()
     pop.max_iter = 500
     #=pop.n_genes = res*res=#
     pop.n_genes = res * nbits
-    pop.mchance = 0.0
-    pop.cchance = 0.0
+    pop.mchance = 0.005
+    pop.cchance = 0.95
     pop.tourney_size = 2
     pop.kelitism = Int(ceil((res*res) * 0.10))
-    pop.kelitism = 0
+    pop.kelitism = 1
 
-    pop.crowding_factor_on = false
-    pop.crowding = 50
+    pop.crowding_factor_on = true
+    pop.crowding = 5
 
-    pop.fitness_sharing_on = false
+    pop.fitness_sharing_on = true
     pop.fitness_sharing_sigma = 0.255
     pop.fitness_sharing_alpha = 1.05
 
     pop.Cfirst   = 1.2
     pop.Clast    = 2.0
 
-    pop.genGapfirst   =-0.9
+    pop.genGapfirst   = 0.9
     pop.genGaplast    = 0.0
     pop.genGapiter    = 0.0
 
@@ -114,10 +112,10 @@ function main()
     #=pop.crossover_function = crossover_blx=#
 
     #=pop.selection_function = selection_ktourney=#
-    #=pop.selection_function = selection_roulette=#
+    pop.selection_function = selection_roulette
     #=pop.selection_function = selection_roulette_linear_scalling=#
     #=pop.selection_function = selection_random=#
-    pop.selection_function = selection_nothing
+    #=pop.selection_function = selection_nothing=#
 
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
