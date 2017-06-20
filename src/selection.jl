@@ -1,4 +1,5 @@
 include("types.jl")
+include("crowding.jl")
 include("linear_scaling.jl")
 
 function selection_random( pop :: _population )
@@ -8,7 +9,8 @@ function selection_random( pop :: _population )
         push!(new_guys, clone(pop.individuals[i]))
     end
 
-    pop.individuals = new_guys
+    #=pop.individuals = new_guys=#
+    crowding(pop, new_guys)
 end
 
 function selection_roulette_linear_scalling( pop :: _population )
@@ -37,7 +39,8 @@ function selection_roulette_linear_scalling( pop :: _population )
         push!(new_guys, clone(pop.individuals[i]))
     end
 
-    pop.individuals = new_guys
+    #=pop.individuals = new_guys=#
+    crowding(pop, new_guys)
 end
 
 function selection_roulette( pop :: _population )
@@ -58,7 +61,8 @@ function selection_roulette( pop :: _population )
         push!(new_guys, clone(pop.individuals[i]))
     end
 
-    pop.individuals = new_guys
+    #=pop.individuals = new_guys=#
+    crowding(pop, new_guys)
 end
 
 function selection_ktourney( pop :: _population )
@@ -76,6 +80,17 @@ function selection_ktourney( pop :: _population )
         push!(new_guys, clone(pop.individuals[best_i]))
     end
 
-    pop.individuals = new_guys
+    #=pop.individuals = new_guys=#
+    crowding(pop, new_guys)
+end
+
+function selection_nothing( pop :: _population )
+    new_guys = []
+    for i in 1:pop.size
+        push!(new_guys, clone(pop.individuals[i]))
+    end
+
+    #=pop.individuals = new_guys=#
+    crowding(pop, new_guys)
 end
 

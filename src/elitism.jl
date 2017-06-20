@@ -1,6 +1,10 @@
 include("types.jl")
+include("distance.jl")
 
 function elitism_get( pop :: _population )
+    if pop.kelitism <= 0
+        return []
+    end
     s = sort( pop.individuals, rev=true )[1:pop.kelitism]
     x = []
 
@@ -12,7 +16,7 @@ function elitism_get( pop :: _population )
 end
 
 function elitism_put_back( pop :: _population, elite )
-    if pop.kelitism == 0
+    if pop.kelitism <= 0
         return
     end
 

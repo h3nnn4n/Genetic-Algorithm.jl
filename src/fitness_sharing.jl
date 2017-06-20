@@ -1,7 +1,11 @@
 include("types.jl")
-include("population.jl") # To get the distance
+include("distance.jl")
 
 function fitness_sharing( pop :: _population )
+    if !pop.fitness_sharing_on
+        return
+    end
+
     dists = zeros(pop.size, pop.size)
     sd    = zeros(pop.size, pop.size)
 

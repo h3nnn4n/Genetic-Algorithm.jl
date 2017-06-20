@@ -3,8 +3,7 @@ using Distributions
 include("types.jl")
 include("selection.jl")
 include("crossover.jl")
-
-distance(a :: _individual, b :: _individual) = mapfoldr((x) -> (x[1].value - x[2].value) ^ 2 , +, collect(zip(a.genetic_code, b.genetic_code)))
+include("distance.jl")
 
 function spawn_empty_population()
     new_pop = _population(0, 0,
@@ -16,6 +15,7 @@ function spawn_empty_population()
                           0.0, 0.0, 0.0,
                           false, false,
                           0.0, 0.0,
+                          0,
                           _ -> _, _ -> _, _ -> _, _ -> _, _ -> _)
 end
 
@@ -69,7 +69,9 @@ function clone( guy :: _individual )
 end
 
 function selection( pop :: _population )
-    pop.individuals = pop.selection_function( pop )
+    #=pop.individuals = pop.selection_function( pop )=#
+    pop.selection_function( pop )
+    #=println("after selection")=#
 end
 
 function crossover( pop :: _population )
@@ -89,7 +91,7 @@ function crossover( pop :: _population )
             push!(new_guys, u)
             push!(new_guys, v)
         else
-            u, v = clone(pop.individuals[p1]), clone(pop.individuals[p2])
+            u, v = clone(pop.individuals[i]), clone(pop.individuals[i+1])
 
             push!(new_guys, u)
             push!(new_guys, v)
@@ -107,6 +109,7 @@ function mutation( pop :: _population )
             r = rand()
             #=println(r, pop.mchance)=#
             if r < pop.mchance
+                println("hue")
                 if pop.individuals[i].genetic_code[j].gen_type == bool
 
                     pop.individuals[i].genetic_code[j].value = !pop.individuals[i].genetic_code[j].value

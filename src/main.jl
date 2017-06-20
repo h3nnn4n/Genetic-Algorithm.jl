@@ -11,6 +11,7 @@ include("population.jl")
 include("selection.jl")
 include("objective_functions.jl")
 include("utils.jl")
+include("crowding.jl")
 
 Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 
@@ -32,10 +33,12 @@ function evolutionary_loop( pop :: _population )
         pop.genGapiter = iter / pop.max_iter
 
         if oldC != getGap(pop) && pop.genGapfirst > 0 && pop.genGaplast > 0
+            println("SHUFFLE")
             shuffle!(pop.individuals)
         end
 
         if pop.fitness_sharing_on
+            println("SHaring")
             fitness_sharing( pop )
         end
 
@@ -59,9 +62,10 @@ function evolutionary_loop( pop :: _population )
 
         genGap = gengap_get(pop)
 
-        selection(pop)
+        #=println("sel hue", pop.selection_function)=#
+        #=selection(pop)=#
         crossover(pop)
-        mutation(pop)
+        #=mutation(pop)=#
 
         gengap_put_back(pop, genGap)
 
@@ -73,31 +77,30 @@ end
 
 function main()
     #=println("Starting")=#
-    res = 32
-    nbits = 4
+    res = 20
+    nbits = 3
     pop = spawn_empty_population()
     pop.size = 50
     pop.max_iter = 500
     #=pop.n_genes = res*res=#
     pop.n_genes = res * nbits
-    pop.mchance = 0.005
-    pop.cchance = 0.98
+    pop.mchance = 0.0
+    pop.cchance = 0.0
     pop.tourney_size = 2
     pop.kelitism = Int(ceil((res*res) * 0.10))
     pop.kelitism = 0
 
-    pop.crowding_factor_on = true
-    pop.fitness_sharing_on = true
+    pop.crowding_factor_on = false
+    pop.crowding = 50
+
+    pop.fitness_sharing_on = false
     pop.fitness_sharing_sigma = 0.255
     pop.fitness_sharing_alpha = 1.05
-
-    pop.crowding_factor_on = false
-    #=pop.fitness_sharing_on = false=#
 
     pop.Cfirst   = 1.2
     pop.Clast    = 2.0
 
-    pop.genGapfirst   =-1.0
+    pop.genGapfirst   =-0.9
     pop.genGaplast    = 0.0
     pop.genGapiter    = 0.0
 
@@ -110,10 +113,11 @@ function main()
     #=pop.crossover_function = crossover_one_point=#
     #=pop.crossover_function = crossover_blx=#
 
-    pop.selection_function = selection_ktourney
+    #=pop.selection_function = selection_ktourney=#
     #=pop.selection_function = selection_roulette=#
     #=pop.selection_function = selection_roulette_linear_scalling=#
     #=pop.selection_function = selection_random=#
+    pop.selection_function = selection_nothing
 
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
@@ -123,16 +127,16 @@ function main()
     #=pop.objective_function = objf_nqueens_int=#
     #=pop.objective_function = objf_img=#
     #=pop.objective_function = objf_path=#
-    #=pop.objective_function = objf_f3=#
+    pop.objective_function = objf_f3
     #=pop.objective_function = objf_f3s=#
-    pop.objective_function = objf_deceptiveN
+    #=pop.objective_function = objf_deceptiveN=#
 
     #=pop.fitness_function   = fitness_sphere=#
     #=pop.fitness_function   = fitness_nqueens=#
-    #=pop.fitness_function   = fitness_identity=#
+    pop.fitness_function   = fitness_identity
     #=pop.fitness_function   = fitness_normalized_ub=#
     #=pop.fitness_function   = fitness_normalized_lb=#
-    pop.fitness_function   = fitness_super_normalizer
+    #=pop.fitness_function   = fitness_super_normalizer=#
 
     for i in 1:pop.size
         new_guy = _individual(pop.n_genes, 0, 0, [])

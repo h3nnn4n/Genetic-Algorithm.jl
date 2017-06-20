@@ -37,6 +37,7 @@ type _population
     fitness_sharing_on :: Bool
     fitness_sharing_sigma :: Float32
     fitness_sharing_alpha :: Float32
+    crowding :: Int
     crossover_function
     selection_function
     mutation_function
