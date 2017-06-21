@@ -178,6 +178,34 @@ function print_pop( pop :: _population )
     end
 end
 
+function get_pop_status( pop :: _population )
+    best_i = 1
+    best_if = 1
+
+    acc = 0.0
+    accf = 0.0
+
+    for i in 1:pop.size
+        acc += pop.individuals[i].fitness
+        accf += pop.individuals[i].obj_f
+        if pop.individuals[i].fitness > pop.individuals[best_i].fitness
+            best_i = i
+        end
+
+        if pop.individuals[i].obj_f > pop.individuals[best_if].obj_f
+            best_if = i
+        end
+    end
+
+    return (
+        pop.individuals[best_i].fitness,
+        acc/pop.size,
+        get_diversity(pop),
+        pop.individuals[best_if].obj_f,
+        accf/pop.size
+        )
+end
+
 function print_status( pop :: _population )
     best_i = 1
     best_if = 1
