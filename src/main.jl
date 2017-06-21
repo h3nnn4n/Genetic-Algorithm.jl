@@ -79,17 +79,17 @@ function main()
     nbits = 3
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 500
+    pop.max_iter = 1000
     #=pop.n_genes = res*res=#
     pop.n_genes = res * nbits
     pop.mchance = 0.005
-    pop.cchance = 0.95
+    pop.cchance = 0.6
     pop.tourney_size = 2
     pop.kelitism = Int(ceil((res*res) * 0.10))
     pop.kelitism = 1
 
     pop.crowding_factor_on = true
-    pop.crowding = 5
+    pop.crowding = 30
 
     pop.fitness_sharing_on = true
     pop.fitness_sharing_sigma = 0.255
@@ -98,7 +98,7 @@ function main()
     pop.Cfirst   = 1.2
     pop.Clast    = 2.0
 
-    pop.genGapfirst   = 0.9
+    pop.genGapfirst   =-0.9
     pop.genGaplast    = 0.0
     pop.genGapiter    = 0.0
 
@@ -111,8 +111,8 @@ function main()
     #=pop.crossover_function = crossover_one_point=#
     #=pop.crossover_function = crossover_blx=#
 
-    #=pop.selection_function = selection_ktourney=#
-    pop.selection_function = selection_roulette
+    pop.selection_function = selection_ktourney
+    #=pop.selection_function = selection_roulette=#
     #=pop.selection_function = selection_roulette_linear_scalling=#
     #=pop.selection_function = selection_random=#
     #=pop.selection_function = selection_nothing=#

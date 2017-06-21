@@ -23,6 +23,8 @@ function crowding( pop :: _population, new_guys )
                 end
             end
 
+            #=@printf(STDERR, "Replacing %3d with %3d, distance = %f\n", i, index, best)=#
+
             pop.individuals[i] = new_guys[index]
         end
     else
