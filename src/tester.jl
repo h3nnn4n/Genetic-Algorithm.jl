@@ -54,11 +54,15 @@ function tester()
     end
 
     for i in 1:pop.max_iter
-        @printf(STDERR, "%6d %f %f %f %f %f %f\n",
+        @printf("%6d %10.4f %10.4f %10.4f %10.4f %10.4f %10.4f\n",
             data_iter[i],
-            data_diver[i], data_objf_max_ever[i],
-            data_objf_max[i], data_objf_avg[i],
-            data_fit_max[i], data_fit_avg[i])
+            data_fit_max[i],
+            data_fit_avg[i],
+            data_diver[i],
+            data_objf_max[i],
+            data_objf_avg[i],
+            data_objf_max_ever[i],
+            )
     end
 end
 
