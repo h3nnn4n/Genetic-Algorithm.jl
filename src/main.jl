@@ -79,11 +79,11 @@ function main()
     nbits = 3
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 1000
+    pop.max_iter = 100
     #=pop.n_genes = res*res=#
     pop.n_genes = res * nbits
     pop.mchance = 0.005
-    pop.cchance = 0.6
+    pop.cchance = 0.9
     pop.tourney_size = 2
     pop.kelitism = Int(ceil((res*res) * 0.10))
     pop.kelitism = 1
@@ -131,10 +131,13 @@ function main()
 
     #=pop.fitness_function   = fitness_sphere=#
     #=pop.fitness_function   = fitness_nqueens=#
-    pop.fitness_function   = fitness_identity
+    #=pop.fitness_function   = fitness_identity=#
     #=pop.fitness_function   = fitness_normalized_ub=#
+    pop.fitness_function   = fitness_normalized_fixed_ub
     #=pop.fitness_function   = fitness_normalized_lb=#
     #=pop.fitness_function   = fitness_super_normalizer=#
+
+    set_fitness_ub( res  * nbits * 30 )
 
     for i in 1:pop.size
         new_guy = _individual(pop.n_genes, 0, 0, [])

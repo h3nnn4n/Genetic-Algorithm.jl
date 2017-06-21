@@ -9,9 +9,15 @@ f3_size = 0
 deceptiveN_size = 0
 deceptiveN_nbits = 0
 
+fitness_ub = 0
+
 map = readdlm("map.txt")
 
 eu_dist( x, y, a, b ) = sqrt(( x - a )^2 + ( y - b )^2)
+
+function set_fitness_ub( v )
+    global fitness_ub = v
+end
 
 function change_deceptiveN_size( nsize :: Int, nbits :: Int )
     global deceptiveN_size  = nsize
@@ -369,6 +375,10 @@ end
 
 function fitness_normalized_ub( pop :: _population, ind :: _individual )
     ind.fitness = ind.obj_f / pop.max_objf
+end
+
+function fitness_normalized_fixed_ub( pop :: _population, ind :: _individual )
+    ind.fitness = ind.obj_f / fitness_ub
 end
 
 function fitness_sphere( pop :: _population, ind :: _individual )
