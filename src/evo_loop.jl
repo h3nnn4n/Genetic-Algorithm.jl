@@ -7,6 +7,7 @@ include("selection.jl")
 include("objective_functions.jl")
 include("utils.jl")
 include("crowding.jl")
+include("pop_plot.jl")
 
 Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 
@@ -41,6 +42,10 @@ function evolutionary_loop( pop :: _population )
 
         if pop.fitness_sharing_on
             fitness_sharing( pop )
+        end
+
+        if iter % 10 == 0
+            pop_plot( pop, iter )
         end
 
         for i in 1:pop.size
