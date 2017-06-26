@@ -62,7 +62,10 @@ function evolutionary_loop( pop :: _population )
         data_fit_max[iter], data_fit_avg[iter], data_diver[iter], data_objf_max[iter], data_objf_avg[iter] = get_pop_status( pop )
 
 
-        @printf(STDERR, "%6d\n", iter)
+        if iter % Int(pop.max_iter/10) == 0
+            @printf(STDERR, "%6d\n", iter)
+        end
+
         #=@printf("%6d ", iter)=#
         #=print_status(pop)=#
         #=@printf("%8d %4d \n", best_ever.obj_f, getGap(pop))=#

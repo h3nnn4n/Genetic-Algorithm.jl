@@ -1,39 +1,8 @@
 include("evo_loop.jl")
 include("types.jl")
+include("problems.jl")
 
 used = false
-
-function print_param( name, pop :: _population )
-    if used == false
-        global used = true
-        f = open(name, "w")
-        @printf(f, "pop_size,%d\n", pop.size)
-        @printf(f, "pop_max_iter,%d\n", pop.max_iter)
-        @printf(f, "pop_mchance,%f\n", pop.mchance)
-        @printf(f, "pop_cchance,%f\n", pop.cchance)
-        @printf(f, "pop_tourney_size,%d\n", pop.tourney_size)
-        @printf(f, "pop_kelitism,%d\n", pop.kelitism)
-
-        @printf(f, "pop_crowding_factor_on,%s\n", pop.crowding_factor_on ? "true" : "false")
-        @printf(f, "pop_crowding,%d\n", pop.crowding)
-        @printf(f, "pop_fitness_sharing_on,%s\n", pop.fitness_sharing_on ? "true" : "false")
-        @printf(f, "pop_fitness_sharing_sigma,%f\n", pop.fitness_sharing_sigma)
-        @printf(f, "pop_fitness_sharing_alpha,%f\n", pop.fitness_sharing_alpha)
-        @printf(f, "pop_Cfirs,%f\n", pop.Cfirst)
-        @printf(f, "pop_Clast,%f\n", pop.Clast)
-        @printf(f, "pop_genGapfirst,%f\n", pop.genGapfirst)
-        @printf(f, "pop_genGaplast,%f\n", pop.genGaplast)
-        @printf(f, "pop_genGapiter,%f\n", pop.genGapiter)
-
-        @printf(f, "pop_selection_function,%s\n", pop.selection_function)
-        #=@printf(f, "pop_mutation_function,%s\n", pop.genGapiter)=#
-        @printf(f, "pop_crossover_function,%s\n", pop.crossover_function)
-        @printf(f, "pop_fitness_function,%s\n", pop.fitness_function)
-        @printf(f, "pop_objective_function,%s\n", pop.objective_function)
-
-        close(f)
-    end
-end
 
 function tester()
     dump = 0
@@ -46,7 +15,7 @@ function tester()
     pop.tourney_size = 2
     pop.kelitism = 1
 
-    pop.crowding_factor_on = true
+    pop.crowding_factor_on = false
     pop.crowding = 30
 
     pop.fitness_sharing_on = true
@@ -60,46 +29,93 @@ function tester()
     pop.genGaplast    = 0.0
     pop.genGapiter    = 0.0
 
-    #=pop.selection_function = selection_ktourney=#
-    pop.selection_function = selection_roulette
+    pop.selection_function = selection_ktourney
+    #=pop.selection_function = selection_roulette=#
     pop.crossover_function = crossover_rand_points
 
-    base_name  = @sprintf("%s__%08d", Dates.format(now(), "yyyy-mm-dd-HH-MM-SS"), rand(1:10^8))
-    param_name = @sprintf("%s__params.txt", base_name)
-    data_name  = @sprintf("%s__data.txt", base_name)
+    k = 0
 
-    #=println(base_name)=#
-    #=println(param_name)=#
-    #=println(data_name)=#
+    for f in [run_f3_10, run_fs3_10, run_fs3_20, run_f3_20]
+    #=for f in [run_f3_20, run_f3_20]=#
+        k += 1
 
-    #=exit()=#
-
-    data_iter          = [ 0   for _ in 1:pop.max_iter ]
-    data_objf_max_ever = [ 0.0 for _ in 1:pop.max_iter ]
-    data_objf_max      = [ 0.0 for _ in 1:pop.max_iter ]
-    data_objf_avg      = [ 0.0 for _ in 1:pop.max_iter ]
-    data_diver         = [ 0.0 for _ in 1:pop.max_iter ]
-    data_fit_max       = [ 0.0 for _ in 1:pop.max_iter ]
-    data_fit_avg       = [ 0.0 for _ in 1:pop.max_iter ]
-
-    for i in 1:ntests
-        d_iter, d_objf_max_ever, d_objf_max, d_objf_avg, d_diver, d_fit_max, d_fit_avg = run_f3_10( pop, param_name )
-
-        for j in 1:pop.max_iter
-            data_iter[j]           = d_iter[j]
-            data_objf_max_ever[j] += d_objf_max_ever[j] / ntests
-            data_objf_max[j]      += d_objf_max[j] / ntests
-            data_objf_avg[j]      += d_objf_avg[j] / ntests
-            data_diver[j]         += d_diver[j] / ntests
-            data_fit_max[j]       += d_fit_max[j] / ntests
-            data_fit_avg[j]       += d_fit_avg[j] / ntests
+        if k == 1
+            pop.fitness_sharing_on = false
+        elseif k == 2
+            pop.fitness_sharing_on = true
         end
 
-        @printf(STDERR, "Finished run %d\n", i)
+        base_name  = @sprintf("%s__%08d", Dates.format(now(), "yyyy-mm-dd-HH-MM-SS"), rand(1:10^8))
+        param_name = @sprintf("%s__params.txt", base_name)
+        data_name  = @sprintf("%s__data.txt", base_name)
+
+        global used = false
+
+        data_iter          = [ 0   for _ in 1:pop.max_iter ]
+        data_objf_max_ever = [ 0.0 for _ in 1:pop.max_iter ]
+        data_objf_max      = [ 0.0 for _ in 1:pop.max_iter ]
+        data_objf_avg      = [ 0.0 for _ in 1:pop.max_iter ]
+        data_diver         = [ 0.0 for _ in 1:pop.max_iter ]
+        data_fit_max       = [ 0.0 for _ in 1:pop.max_iter ]
+        data_fit_avg       = [ 0.0 for _ in 1:pop.max_iter ]
+
+        for i in 1:ntests
+            @printf(STDERR, "Running %s %d\n", f, i)
+            pop.individuals = []
+            d_iter, d_objf_max_ever, d_objf_max, d_objf_avg, d_diver, d_fit_max, d_fit_avg = f( pop, param_name )
+
+            for j in 1:pop.max_iter
+                data_iter[j]           = d_iter[j]
+                data_objf_max_ever[j] += d_objf_max_ever[j] / ntests
+                data_objf_max[j]      += d_objf_max[j] / ntests
+                data_objf_avg[j]      += d_objf_avg[j] / ntests
+                data_diver[j]         += d_diver[j] / ntests
+                data_fit_max[j]       += d_fit_max[j] / ntests
+                data_fit_avg[j]       += d_fit_avg[j] / ntests
+            end
+        end
+
+        print_data(data_name, pop, data_iter, data_fit_max, data_fit_avg, data_diver, data_objf_max, data_objf_avg, data_objf_max_ever)
     end
+end
+
+function print_param( name, pop :: _population )
+    if used == false
+        global used = true
+        f = open(name, "w")
+        @printf(f, "pop.size = %d\n", pop.size)
+        @printf(f, "pop.max_iter = %d\n", pop.max_iter)
+        @printf(f, "pop.mchance = %f\n", pop.mchance)
+        @printf(f, "pop.cchance = %f\n", pop.cchance)
+        @printf(f, "pop.tourney_size = %d\n", pop.tourney_size)
+        @printf(f, "pop.kelitism = %d\n", pop.kelitism)
+
+        @printf(f, "pop.crowding_factor_on = %s\n", pop.crowding_factor_on ? "true" : "false")
+        @printf(f, "pop.crowding = %d\n", pop.crowding)
+        @printf(f, "pop.fitness_sharing_on = %s\n", pop.fitness_sharing_on ? "true" : "false")
+        @printf(f, "pop.fitness_sharing_sigma = %f\n", pop.fitness_sharing_sigma)
+        @printf(f, "pop.fitness_sharing_alpha = %f\n", pop.fitness_sharing_alpha)
+        @printf(f, "pop.Cfirs = %f\n", pop.Cfirst)
+        @printf(f, "pop.Clast = %f\n", pop.Clast)
+        @printf(f, "pop.genGapfirst = %f\n", pop.genGapfirst)
+        @printf(f, "pop.genGaplast = %f\n", pop.genGaplast)
+        @printf(f, "pop.genGapiter = %f\n", pop.genGapiter)
+
+        @printf(f, "pop.selection_function = %s\n", pop.selection_function)
+        #=@printf(f, "pop.mutation_function = %s\n", pop.genGapiter)=#
+        @printf(f, "pop.crossover_function = %s\n", pop.crossover_function)
+        @printf(f, "pop.fitness_function = %s\n", pop.fitness_function)
+        @printf(f, "pop.objective_function = %s\n", pop.objective_function)
+
+        close(f)
+    end
+end
+
+function print_data( name, pop, data_iter, data_fit_max, data_fit_avg, data_diver, data_objf_max, data_objf_avg, data_objf_max_ever)
+    f = open(name, "w")
 
     for i in 1:pop.max_iter
-        @printf("%6d %10.4f %10.4f %10.4f %10.4f %10.4f %10.4f\n",
+        @printf(f, "%6d %10.4f %10.4f %10.4f %10.4f %10.4f %10.4f\n",
             data_iter[i],
             data_fit_max[i],
             data_fit_avg[i],
@@ -109,31 +125,8 @@ function tester()
             data_objf_max_ever[i],
             )
     end
-end
 
-function run_f3_10( pop :: _population, param_name )
-    res = 20
-    nbits = 3
-    pop.n_genes = res * nbits
-    change_f3_size(res)
-    change_deceptiveN_size(res, nbits)
-    set_fitness_ub( res  * nbits * 30 )
-
-    pop.objective_function = objf_f3
-    pop.fitness_function   = fitness_normalized_fixed_ub
-
-    for i in 1:pop.size
-        new_guy = _individual(pop.n_genes, 0, 0, [])
-        for j in 1:pop.n_genes
-            new_gene = _gene(bool, false, true, 0.0)
-            push!(new_guy.genetic_code, new_gene)
-        end
-        push!(pop.individuals, new_guy)
-    end
-
-    print_param(param_name, pop)
-
-    return evolutionary_loop( pop )
+    close(f)
 end
 
 tester()
