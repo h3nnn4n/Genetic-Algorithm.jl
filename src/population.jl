@@ -115,18 +115,19 @@ function mutation( pop :: _population )
                     #=dist = Int(ceil((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.01))=#
                     #=pop.individuals[i].genetic_code[j].value += rand(-dist:dist)=#
 
-                    #=dist = Int(ceil(((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.1)))=#
-                    #=pop.individuals[i].genetic_code[j].value += Int(ceil(rand(d)) * (dist * 2.0) - dist)=#
+                    dist = Int(ceil(((pop.individuals[i].genetic_code[j].ub - pop.individuals[i].genetic_code[j].lb) * 0.1)))
+                    pop.individuals[i].genetic_code[j].value += Int(ceil(rand(d)) * (dist * 2.0) - dist)
 
-                    a = rand(1:4)
+                    # Swap
+                    #=a = rand(1:4)=#
 
-                    while a == j
-                        a = rand(1:4)
-                    end
+                    #=while a == j=#
+                        #=a = rand(1:4)=#
+                    #=end=#
 
-                    t                                        = pop.individuals[i].genetic_code[j].value
-                    pop.individuals[i].genetic_code[j].value = pop.individuals[i].genetic_code[a].value
-                    pop.individuals[i].genetic_code[a].value = t
+                    #=t                                        = pop.individuals[i].genetic_code[j].value=#
+                    #=pop.individuals[i].genetic_code[j].value = pop.individuals[i].genetic_code[a].value=#
+                    #=pop.individuals[i].genetic_code[a].value = t=#
 
                 elseif pop.individuals[i].genetic_code[j].gen_type == real
 

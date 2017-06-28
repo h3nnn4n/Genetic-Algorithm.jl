@@ -45,7 +45,7 @@ function evolutionary_loop( pop :: _population )
         end
 
         if iter % 10 == 0
-            pop_plot( pop, iter )
+            #=pop_plot( pop, iter )=#
         end
 
         for i in 1:pop.size

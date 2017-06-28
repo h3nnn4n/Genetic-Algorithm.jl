@@ -16,11 +16,11 @@ include("evo_loop.jl")
 
 function main()
     #=println("Starting")=#
-    res = 20
-    nbits = 3
+    res = 8
+    nbits = 1
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 100
+    pop.max_iter = 1000
     #=pop.n_genes = res*res=#
     pop.n_genes = res * nbits
     pop.mchance = 0.005
@@ -28,7 +28,7 @@ function main()
     pop.tourney_size = 2
     pop.kelitism = 1
 
-    pop.crowding_factor_on = true
+    pop.crowding_factor_on = false
     pop.crowding = 45
 
     pop.fitness_sharing_on = false
@@ -47,8 +47,8 @@ function main()
 
     #=pop.crossover_function = crossover_pmx=#
     #=pop.crossover_function = crossover_uniform=#
-    pop.crossover_function = crossover_rand_points
-    #=pop.crossover_function = crossover_one_point=#
+    #=pop.crossover_function = crossover_rand_points=#
+    pop.crossover_function = crossover_one_point
     #=pop.crossover_function = crossover_blx=#
 
     #=pop.selection_function = selection_ktourney=#
@@ -62,18 +62,18 @@ function main()
     #=pop.objective_function = objf_sphere=#
     #=pop.objective_function = objf_rosen=#
     #=pop.objective_function = objf_nqueens=#
-    #=pop.objective_function = objf_nqueens_int=#
+    pop.objective_function = objf_nqueens_int
     #=pop.objective_function = objf_img=#
     #=pop.objective_function = objf_path=#
-    pop.objective_function = objf_f3
+    #=pop.objective_function = objf_f3=#
     #=pop.objective_function = objf_f3s=#
     #=pop.objective_function = objf_deceptiveN=#
 
-    #=pop.fitness_function   = fitness_sphere=#
+    pop.fitness_function   = fitness_sphere
     #=pop.fitness_function   = fitness_nqueens=#
     #=pop.fitness_function   = fitness_identity=#
     #=pop.fitness_function   = fitness_normalized_ub=#
-    pop.fitness_function   = fitness_normalized_fixed_ub
+    #=pop.fitness_function   = fitness_normalized_fixed_ub=#
     #=pop.fitness_function   = fitness_normalized_lb=#
     #=pop.fitness_function   = fitness_super_normalizer=#
 
@@ -83,9 +83,10 @@ function main()
         new_guy = _individual(pop.n_genes, 0, 0, [])
         for j in 1:pop.n_genes
             #=new_gene = _gene(real, -2.6, 2.6, 0.0)=#
-            new_gene = _gene(bool, false, true, 0.0)
+            #=new_gene = _gene(bool, false, true, 0.0)=#
             #=new_gene = _gene(int, 1, 4, 0)=#
             #=new_gene = _gene(permut, 1, res, 0)=#
+            new_gene = _gene(int, 1, res, 0)
             push!(new_guy.genetic_code, new_gene)
         end
         push!(pop.individuals, new_guy)
@@ -96,10 +97,11 @@ function main()
     genes = [(x -> x.value)(i) for i in best_ever.genetic_code]
 
     for i in 1:length(genes)
-        @printf(STDERR, "%d", ((genes[i])?:1:0))
-        if mod(i, nbits) == 0
-            @printf(STDERR, " ")
-        end
+        @printf(STDERR, "%d", ((genes[i])))
+        #=@printf(STDERR, "%d", ((genes[i])?:1:0))=#
+        #=if mod(i, nbits) == 0=#
+            #=@printf(STDERR, " ")=#
+        #=end=#
         #=print("$(i?:1:0) ")=#
     end
     @printf(STDERR, " = %f\n", best_ever.obj_f)

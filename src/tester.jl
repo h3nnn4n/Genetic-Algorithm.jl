@@ -9,41 +9,44 @@ function tester()
     ntests = 5
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 1000
-    pop.mchance = 0.005
+    pop.max_iter = 5000
+    pop.mchance = 0.01
     pop.cchance = 0.9
     pop.tourney_size = 2
     pop.kelitism = 1
 
-    pop.crowding_factor_on = false
-    pop.crowding = 30
+    pop.crowding_factor_on = true
+    pop.crowding = 3
 
-    pop.fitness_sharing_on = true
+    pop.fitness_sharing_on = false
     pop.fitness_sharing_sigma = 0.255
     pop.fitness_sharing_alpha = 1.05
 
     pop.Cfirst   = 1.2
     pop.Clast    = 2.0
 
-    pop.genGapfirst   =-0.9
+    pop.genGapfirst   = 0.9
     pop.genGaplast    = 0.0
     pop.genGapiter    = 0.0
 
     pop.selection_function = selection_ktourney
     #=pop.selection_function = selection_roulette=#
-    pop.crossover_function = crossover_rand_points
+    #=pop.selection_function = selection_roulette_linear_scalling=#
+    #=pop.crossover_function = crossover_rand_points=#
+    pop.crossover_function = crossover_uniform
 
     k = 0
 
-    for f in [run_f3_10, run_fs3_10, run_fs3_20, run_f3_20]
+    #=for f in [run_f3_10, run_fs3_10, run_fs3_20, run_f3_20]=#
     #=for f in [run_f3_20, run_f3_20]=#
-        k += 1
+    for f in [run_nqueens16]
+        #=k += 1=#
 
-        if k == 1
-            pop.fitness_sharing_on = false
-        elseif k == 2
-            pop.fitness_sharing_on = true
-        end
+        #=if k == 1=#
+            #=pop.fitness_sharing_on = false=#
+        #=elseif k == 2=#
+            #=pop.fitness_sharing_on = true=#
+        #=end=#
 
         base_name  = @sprintf("%s__%08d", Dates.format(now(), "yyyy-mm-dd-HH-MM-SS"), rand(1:10^8))
         param_name = @sprintf("%s__params.txt", base_name)

@@ -1,5 +1,53 @@
 include("types.jl")
 
+function run_nqueens16( pop :: _population, param_name )
+    res = 16
+    nbits = 1
+    pop.n_genes = res * nbits
+
+    #=pop.objective_function = objf_nqueens=#
+    pop.objective_function = objf_nqueens_int
+    pop.fitness_function   = fitness_sphere
+    #=pop.fitness_function   = fitness_nqueens=#
+
+    for i in 1:pop.size
+        new_guy = _individual(pop.n_genes, 0, 0, [])
+        for j in 1:pop.n_genes
+            new_gene = _gene(int, 1, res, 0)
+            push!(new_guy.genetic_code, new_gene)
+        end
+        push!(pop.individuals, new_guy)
+    end
+
+    print_param(param_name, pop)
+
+    return evolutionary_loop( pop )
+end
+
+function run_nqueens8( pop :: _population, param_name )
+    res = 8
+    nbits = 1
+    pop.n_genes = res * nbits
+
+    #=pop.objective_function = objf_nqueens=#
+    pop.objective_function = objf_nqueens_int
+    pop.fitness_function   = fitness_sphere
+    #=pop.fitness_function   = fitness_nqueens=#
+
+    for i in 1:pop.size
+        new_guy = _individual(pop.n_genes, 0, 0, [])
+        for j in 1:pop.n_genes
+            new_gene = _gene(int, 1, res, 0)
+            push!(new_guy.genetic_code, new_gene)
+        end
+        push!(pop.individuals, new_guy)
+    end
+
+    print_param(param_name, pop)
+
+    return evolutionary_loop( pop )
+end
+
 function run_fs3_20( pop :: _population, param_name )
     res = 20
     nbits = 3
