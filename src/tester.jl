@@ -35,15 +35,17 @@ function tester()
 
     k = 0
 
-    for f in [run_f3_10, run_fs3_10, run_fs3_20, run_f3_20]
-    #=for f in [run_f3_20, run_f3_20]=#
-        k += 1
+    #=for f in [run_f3_10, run_fs3_10, run_fs3_20, run_f3_20]=#
+    #=for f in [run_path]=#
+    #=for f in [run_f3_10]=#
+    for f in [run_d16_4, run_d32_4]
+        #=k += 1=#
 
-        if k == 1
-            pop.fitness_sharing_on = false
-        elseif k == 2
-            pop.fitness_sharing_on = true
-        end
+        #=if k == 1=#
+            #=pop.fitness_sharing_on = false=#
+        #=elseif k == 2=#
+            #=pop.fitness_sharing_on = true=#
+        #=end=#
 
         base_name  = @sprintf("%s__%08d", Dates.format(now(), "yyyy-mm-dd-HH-MM-SS"), rand(1:10^8))
         param_name = @sprintf("%s__params.txt", base_name)
@@ -58,6 +60,7 @@ function tester()
         data_diver         = [ 0.0 for _ in 1:pop.max_iter ]
         data_fit_max       = [ 0.0 for _ in 1:pop.max_iter ]
         data_fit_avg       = [ 0.0 for _ in 1:pop.max_iter ]
+        data_raw           = [ 0.0 for _ in 1:ntests ]
 
         for i in 1:ntests
             @printf(STDERR, "Running %s %d\n", f, i)
@@ -73,9 +76,11 @@ function tester()
                 data_fit_max[j]       += d_fit_max[j] / ntests
                 data_fit_avg[j]       += d_fit_avg[j] / ntests
             end
+
+            data_raw[i]           += d_objf_max_ever[pop.max_iter]
         end
 
-        print_data(data_name, pop, data_iter, data_fit_max, data_fit_avg, data_diver, data_objf_max, data_objf_avg, data_objf_max_ever)
+        print_data(data_name, pop, data_iter, data_fit_max, data_fit_avg, data_diver, data_objf_max, data_objf_avg, data_objf_max_ever, data_raw)
     end
 end
 
@@ -111,11 +116,11 @@ function print_param( name, pop :: _population )
     end
 end
 
-function print_data( name, pop, data_iter, data_fit_max, data_fit_avg, data_diver, data_objf_max, data_objf_avg, data_objf_max_ever)
+function print_data( name, pop, data_iter, data_fit_max, data_fit_avg, data_diver, data_objf_max, data_objf_avg, data_objf_max_ever, data_raw)
     f = open(name, "w")
 
     for i in 1:pop.max_iter
-        @printf(f, "%6d %10.4f %10.4f %10.4f %10.4f %10.4f %10.4f\n",
+        @printf(f, "%6d %10.4f %10.4f %10.4f %10.4f %10.4f %10.4f %10.4f\n",
             data_iter[i],
             data_fit_max[i],
             data_fit_avg[i],
@@ -123,6 +128,7 @@ function print_data( name, pop, data_iter, data_fit_max, data_fit_avg, data_dive
             data_objf_max[i],
             data_objf_avg[i],
             data_objf_max_ever[i],
+            std(data_raw),
             )
     end
 

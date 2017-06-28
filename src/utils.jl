@@ -34,11 +34,11 @@ function print_path( ind :: _individual )
 
         #=@printf("Trying move: %2d  crossroads = %2d\n", move, crossroads)=#
 
-        #=if crossroads == 1=#
-            #=break=#
-        #=end=#
+        if crossroads == 1
+            break
+        end
 
-        if crossroads > 2 || crossroads == 1
+        if crossroads > 2
             oldx, oldy = x, y
 
             if move == 1

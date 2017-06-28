@@ -14,8 +14,8 @@ reset
 #set terminal wxt size 410,250 enhanced font 'Verdana,9' persist
 # png
 #set terminal pngcairo size 1600,600 enhanced font 'Verdana,9'
-#set terminal pngcairo size 650,300 enhanced dashed font 'Verdana,10'
-set terminal pngcairo size 1650,600 enhanced dashed font 'Verdana,10'
+set terminal pngcairo size 650,220 enhanced dashed font 'Verdana,10'
+#set terminal pngcairo size 1650,600 enhanced dashed font 'Verdana,10'
 set output 'fitness.png'
 # svg
 #set terminal svg size 410,250 fname 'Verdana, Helvetica, Arial, sans-serif' fsize '9' rounded dashed
@@ -40,14 +40,23 @@ set grid back ls 12
 #set style line 5 lc rgb '#000000' pt 8 ps 1.5 lw 1
 #set style line 6 lc rgb '#000000' pt 6 ps 1.5 lw 1
 
-set style line 1 lw 1 lt 1 lc rgb '#1B9E77' # dark teal
-set style line 2 lw 1 lt 1 lc rgb '#D95F02' # dark orange
-set style line 3 lw 1 lt 1 lc rgb '#7570B3' # dark lilac
-set style line 4 lw 1 lt 1 lc rgb '#E7298A' # dark magenta
-set style line 5 lw 1 lt 1 lc rgb '#66A61E' # dark lime green
-set style line 6 lw 1 lt 1 lc rgb '#E6AB02' # dark banana
-set style line 7 lw 1 lt 1 lc rgb '#A6761D' # dark tan
-set style line 8 lw 1 lt 1 lc rgb '#666666' # dark gray
+#set style line 1 lw 1 lt 1 lc rgb '#1B9E77' # dark teal
+#set style line 2 lw 1 lt 1 lc rgb '#D95F02' # dark orange
+#set style line 3 lw 1 lt 1 lc rgb '#7570B3' # dark lilac
+#set style line 4 lw 1 lt 1 lc rgb '#E7298A' # dark magenta
+#set style line 5 lw 1 lt 1 lc rgb '#66A61E' # dark lime green
+#set style line 6 lw 1 lt 1 lc rgb '#E6AB02' # dark banana
+#set style line 7 lw 1 lt 1 lc rgb '#A6761D' # dark tan
+#set style line 8 lw 1 lt 1 lc rgb '#666666' # dark gray
+
+set style line 1 lw 1 lt 1 lc rgb '#000000' # dark teal
+set style line 2 lw 1 lt 1 lc rgb '#000000' # dark orange
+set style line 3 lw 1 lt 1 lc rgb '#000000' # dark lilac
+set style line 4 lw 1 lt 1 lc rgb '#000000' # dark magenta
+set style line 5 lw 1 lt 1 lc rgb '#000000' # dark lime green
+set style line 6 lw 1 lt 1 lc rgb '#000000' # dark banana
+set style line 7 lw 1 lt 1 lc rgb '#000000' # dark tan
+set style line 8 lw 1 lt 1 lc rgb '#000000' # dark gray
 
 set key bottom right
 

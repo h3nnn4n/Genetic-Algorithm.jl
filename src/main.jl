@@ -38,7 +38,7 @@ function main()
     pop.Cfirst   = 1.2
     pop.Clast    = 2.0
 
-    pop.genGapfirst   =-0.9
+    pop.genGapfirst   = 0.9
     pop.genGaplast    = 0.0
     pop.genGapiter    = 0.0
 
@@ -64,8 +64,8 @@ function main()
     #=pop.objective_function = objf_nqueens=#
     #=pop.objective_function = objf_nqueens_int=#
     #=pop.objective_function = objf_img=#
-    #=pop.objective_function = objf_path=#
-    pop.objective_function = objf_f3
+    pop.objective_function = objf_path
+    #=pop.objective_function = objf_f3=#
     #=pop.objective_function = objf_f3s=#
     #=pop.objective_function = objf_deceptiveN=#
 
@@ -73,9 +73,9 @@ function main()
     #=pop.fitness_function   = fitness_nqueens=#
     #=pop.fitness_function   = fitness_identity=#
     #=pop.fitness_function   = fitness_normalized_ub=#
-    pop.fitness_function   = fitness_normalized_fixed_ub
+    #=pop.fitness_function   = fitness_normalized_fixed_ub=#
     #=pop.fitness_function   = fitness_normalized_lb=#
-    #=pop.fitness_function   = fitness_super_normalizer=#
+    pop.fitness_function   = fitness_super_normalizer
 
     set_fitness_ub( res  * nbits * 30 )
 
@@ -83,7 +83,7 @@ function main()
         new_guy = _individual(pop.n_genes, 0, 0, [])
         for j in 1:pop.n_genes
             #=new_gene = _gene(real, -2.6, 2.6, 0.0)=#
-            new_gene = _gene(bool, false, true, 0.0)
+            #=new_gene = _gene(bool, false, true, 0.0)=#
             #=new_gene = _gene(int, 1, 4, 0)=#
             #=new_gene = _gene(permut, 1, res, 0)=#
             push!(new_guy.genetic_code, new_gene)
@@ -93,16 +93,16 @@ function main()
 
     result, best_ever = evolutionary_loop( pop )
 
-    genes = [(x -> x.value)(i) for i in best_ever.genetic_code]
+    #=genes = [(x -> x.value)(i) for i in best_ever.genetic_code]=#
 
-    for i in 1:length(genes)
-        @printf(STDERR, "%d", ((genes[i])?:1:0))
-        if mod(i, nbits) == 0
-            @printf(STDERR, " ")
-        end
-        #=print("$(i?:1:0) ")=#
-    end
-    @printf(STDERR, " = %f\n", best_ever.obj_f)
+    #=for i in 1:length(genes)=#
+        #=@printf(STDERR, "%d", ((genes[i])))=#
+        #=if mod(i, nbits) == 0=#
+            #=@printf(STDERR, " ")=#
+        #=end=#
+        #=[>print("$(i?:1:0) ")<]=#
+    #=end=#
+    #=@printf(STDERR, " = %f\n", best_ever.obj_f)=#
 
     #=len, full = path_length(best_ever)=#
     #=@printf(STDERR, "len = %3d   complete = %s\n", len, full ? "yes" : "no")=#

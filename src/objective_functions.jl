@@ -127,7 +127,11 @@ function objf_path( ind :: _individual )
             break
         end
 
-        if crossroads > 2 || crossroads == 1
+        if crossroads == 1
+            break
+        end
+
+        if crossroads > 2
             oldx, oldy = x, y
 
             if move == 1
@@ -146,6 +150,7 @@ function objf_path( ind :: _individual )
                 obj += step_point * 5
 
                 if used[x, y] > 1
+                    break
                     obj -= (step_point * used[x, y]) ^ 2
                 else
                     obj += step_point
@@ -174,6 +179,7 @@ function objf_path( ind :: _individual )
                 end
 
                 if used[x, y] > 1
+                    break
                     obj -= (step_point * used[x, y]) ^ 2
                 else
                     #=obj += step_point=#
