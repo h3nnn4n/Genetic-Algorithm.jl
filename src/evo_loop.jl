@@ -7,7 +7,6 @@ include("selection.jl")
 include("objective_functions.jl")
 include("utils.jl")
 include("crowding.jl")
-include("pop_plot.jl")
 
 Base.isless(x :: _individual, y :: _individual) = (x.fitness) < (y.fitness)
 
