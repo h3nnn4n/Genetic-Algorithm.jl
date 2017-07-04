@@ -17,7 +17,7 @@ include("evo_loop.jl")
 function main()
     #=println("Starting")=#
     res = 8
-    nbits = 1
+    nbits = 2
     pop = spawn_empty_population()
     pop.size = 50
     pop.max_iter = 1000
@@ -60,34 +60,32 @@ function main()
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
     #=pop.objective_function = objf_sphere=#
-    #=pop.objective_function = objf_rosen=#
+    pop.objective_function = objf_rosen
     #=pop.objective_function = objf_nqueens=#
     #=pop.objective_function = objf_nqueens_int=#
     #=pop.objective_function = objf_img=#
-    #=pop.objective_function = objf_path=#
-    pop.objective_function = objf_path
     #=pop.objective_function = objf_f3=#
     #=pop.objective_function = objf_f3s=#
     #=pop.objective_function = objf_deceptiveN=#
 
-    #=pop.fitness_function   = fitness_sphere=#
+    pop.fitness_function   = fitness_sphere
     #=pop.fitness_function   = fitness_nqueens=#
     #=pop.fitness_function   = fitness_identity=#
     #=pop.fitness_function   = fitness_normalized_ub=#
     #=pop.fitness_function   = fitness_normalized_fixed_ub=#
     #=pop.fitness_function   = fitness_normalized_lb=#
-    pop.fitness_function   = fitness_super_normalizer
+    #=pop.fitness_function   = fitness_super_normalizer=#
 
     set_fitness_ub( res  * nbits * 30 )
 
     for i in 1:pop.size
         new_guy = _individual(pop.n_genes, 0, 0, [])
         for j in 1:pop.n_genes
-            #=new_gene = _gene(real, -2.6, 2.6, 0.0)=#
+            new_gene = _gene(real, -2.6, 2.6, 0.0)
             #=new_gene = _gene(bool, false, true, 0.0)=#
             #=new_gene = _gene(int, 1, 4, 0)=#
             #=new_gene = _gene(permut, 1, res, 0)=#
-            new_gene = _gene(int, 1, res, 0)
+            #=new_gene = _gene(int, 1, res, 0)=#
             push!(new_guy.genetic_code, new_gene)
         end
         push!(pop.individuals, new_guy)
@@ -105,11 +103,6 @@ function main()
         #=[>print("$(i?:1:0) ")<]=#
     #=end=#
     #=@printf(STDERR, " = %f\n", best_ever.obj_f)=#
-
-    #=len, full = path_length(best_ever)=#
-    #=@printf(STDERR, "len = %3d   complete = %s\n", len, full ? "yes" : "no")=#
-
-    #=print_path(best_ever)=#
 
     return
 end

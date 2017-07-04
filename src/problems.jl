@@ -98,28 +98,6 @@ function run_d16_4( pop :: _population, param_name )
     return evolutionary_loop( pop )
 end
 
-function run_path( pop :: _population, param_name )
-    res = 20
-    nbits = 3
-    pop.n_genes = res * nbits
-
-    pop.objective_function = objf_path
-    pop.fitness_function   = fitness_super_normalizer
-
-    for i in 1:pop.size
-        new_guy = _individual(pop.n_genes, 0, 0, [])
-        for j in 1:pop.n_genes
-            new_gene = _gene(int, 1, 4, 0)
-            push!(new_guy.genetic_code, new_gene)
-        end
-        push!(pop.individuals, new_guy)
-    end
-
-    print_param(param_name, pop)
-
-    return evolutionary_loop( pop )
-end
-
 function run_fs3_20( pop :: _population, param_name )
     res = 20
     nbits = 3
