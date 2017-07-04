@@ -16,7 +16,7 @@ function spawn_empty_population()
                           false, false,
                           0.0, 0.0,
                           0,
-                          _ -> _, _ -> _, _ -> _, _ -> _, _ -> _)
+                          _ -> 0, _ -> 0, _ -> 0, _ -> 0, _ -> 0)
 end
 
 function init_population( pop :: _population )
