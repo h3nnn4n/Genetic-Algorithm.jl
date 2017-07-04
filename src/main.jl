@@ -16,13 +16,14 @@ include("evo_loop.jl")
 
 function main()
     #=println("Starting")=#
-    res = 8
-    nbits = 2
+    res = 3
+    nbits = 1
     pop = spawn_empty_population()
     pop.size = 50
     pop.max_iter = 1000
     #=pop.n_genes = res*res=#
-    pop.n_genes = res * nbits
+    #=pop.n_genes = res * nbits=#
+    pop.n_genes = 6
     pop.mchance = 0.005
     pop.cchance = 0.9
     pop.tourney_size = 2
@@ -60,17 +61,18 @@ function main()
     #=pop.objective_function = objf_alternating_parity=#
     #=pop.objective_function = objf_alternating_bit=#
     #=pop.objective_function = objf_sphere=#
-    pop.objective_function = objf_rosen
+    #=pop.objective_function = objf_rosen=#
     #=pop.objective_function = objf_nqueens=#
     #=pop.objective_function = objf_nqueens_int=#
     #=pop.objective_function = objf_img=#
     #=pop.objective_function = objf_f3=#
     #=pop.objective_function = objf_f3s=#
     #=pop.objective_function = objf_deceptiveN=#
+    pop.objective_function = objf_hp
 
-    pop.fitness_function   = fitness_sphere
+    #=pop.fitness_function   = fitness_sphere=#
     #=pop.fitness_function   = fitness_nqueens=#
-    #=pop.fitness_function   = fitness_identity=#
+    pop.fitness_function   = fitness_identity
     #=pop.fitness_function   = fitness_normalized_ub=#
     #=pop.fitness_function   = fitness_normalized_fixed_ub=#
     #=pop.fitness_function   = fitness_normalized_lb=#
@@ -81,11 +83,11 @@ function main()
     for i in 1:pop.size
         new_guy = _individual(pop.n_genes, 0, 0, [])
         for j in 1:pop.n_genes
-            new_gene = _gene(real, -2.6, 2.6, 0.0)
+            #=new_gene = _gene(real, -2.6, 2.6, 0.0)=#
             #=new_gene = _gene(bool, false, true, 0.0)=#
             #=new_gene = _gene(int, 1, 4, 0)=#
             #=new_gene = _gene(permut, 1, res, 0)=#
-            #=new_gene = _gene(int, 1, res, 0)=#
+            new_gene = _gene(int, 1, 3, 0)
             push!(new_guy.genetic_code, new_gene)
         end
         push!(pop.individuals, new_guy)

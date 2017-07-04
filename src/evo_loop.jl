@@ -67,12 +67,12 @@ function evolutionary_loop( pop :: _population )
 
 
         if iter % Int(pop.max_iter/10) == 0
-            @printf(STDERR, "%6d\n", iter)
+            #=@printf(STDERR, "%6d\n", iter)=#
         end
 
-        #=@printf("%6d ", iter)=#
-        #=print_status(pop)=#
-        #=@printf("%8d %4d \n", best_ever.obj_f, getGap(pop))=#
+        @printf("%6d ", iter)
+        print_status(pop)
+        @printf("%8d %4d \n", best_ever.obj_f, getGap(pop))
 
         genGap = gengap_get(pop)
 
