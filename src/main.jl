@@ -9,6 +9,7 @@ include("elitism.jl")
 include("gengap.jl")
 include("population.jl")
 include("selection.jl")
+include("utils.jl")
 include("objective_functions.jl")
 include("utils.jl")
 include("crowding.jl")
@@ -20,11 +21,11 @@ function main()
     nbits = 1
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 1000
+    pop.max_iter = 10000
     #=pop.n_genes = res*res=#
     #=pop.n_genes = res * nbits=#
     pop.n_genes = 6
-    pop.mchance = 0.005
+    pop.mchance = 0.015
     pop.cchance = 0.9
     pop.tourney_size = 2
     pop.kelitism = 1
@@ -48,8 +49,8 @@ function main()
 
     #=pop.crossover_function = crossover_pmx=#
     #=pop.crossover_function = crossover_uniform=#
-    #=pop.crossover_function = crossover_rand_points=#
-    pop.crossover_function = crossover_one_point
+    pop.crossover_function = crossover_rand_points
+    #=pop.crossover_function = crossover_one_point=#
     #=pop.crossover_function = crossover_blx=#
 
     #=pop.selection_function = selection_ktourney=#
@@ -80,6 +81,8 @@ function main()
 
     set_fitness_ub( res  * nbits * 30 )
 
+    set_hp_model("HPPHPH")
+
     for i in 1:pop.size
         new_guy = _individual(pop.n_genes, 0, 0, [])
         for j in 1:pop.n_genes
@@ -105,6 +108,8 @@ function main()
         #=[>print("$(i?:1:0) ")<]=#
     #=end=#
     #=@printf(STDERR, " = %f\n", best_ever.obj_f)=#
+
+    view_hp(best_ever)
 
     return
 end

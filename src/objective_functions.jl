@@ -1,11 +1,10 @@
 include("types.jl")
-include("utils.jl")
 
 #=img = load("lena2.png")=#
 #=img = load("lena3.png")=#
 #=img = load("box.png")=#
 
-model = "HPPHPH"
+model = ""
 
 f3_size = 0
 deceptiveN_size = 0
@@ -14,6 +13,14 @@ deceptiveN_nbits = 0
 fitness_ub = 0
 
 eu_dist( x, y, a, b ) = sqrt(( x - a )^2 + ( y - b )^2)
+
+function set_hp_model( s )
+    global model = s
+end
+
+function get_hp_model()
+    return model
+end
 
 function set_fitness_ub( v )
     global fitness_ub = v
@@ -89,7 +96,7 @@ function objf_hp( ind :: _individual )
             y -= 1
         end
 
-        used[x, y] = 1
+        used[x, y] += 1
         if model[i] == 'H'
             is_h[x, y] += 1
         end
@@ -98,7 +105,7 @@ function objf_hp( ind :: _individual )
     for i in 1:ind.n_genes * 2 + 1
         for j in 1:ind.n_genes * 2 + 1
             if used[x, y] > 1
-                #=obj -= 2=#
+                obj -= 2
             end
 
             if i >= 2 && j >= 2 && i <= ind.n_genes * 2 && j < ind.n_genes * 2
@@ -108,6 +115,8 @@ function objf_hp( ind :: _individual )
                     bonus += is_h[x - 1, y + 0]
                     bonus += is_h[x + 0, y + 1]
                     bonus += is_h[x + 0, y - 1]
+
+                    bonus = bonus * bonus
 
                     obj += bonus
                 end

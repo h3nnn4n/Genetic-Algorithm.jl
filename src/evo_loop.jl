@@ -85,6 +85,6 @@ function evolutionary_loop( pop :: _population )
         elitism_put_back(pop, elite)
     end
 
-    #=return pop, best_ever=#
-    return (data_iter, data_objf_max_ever, data_objf_max, data_objf_avg, data_diver, data_fit_max, data_fit_avg)
+    return pop, best_ever
+    #=return (data_iter, data_objf_max_ever, data_objf_max, data_objf_avg, data_diver, data_fit_max, data_fit_avg)=#
 end
