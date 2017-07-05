@@ -72,14 +72,14 @@ function objf_hp( ind :: _individual )
     for i in 2:ind.n_genes
         dir = gens[i]
 
-        if dir == 0
+        if dir == 2
             # nothing
         elseif dir == 1
             direction += 1
             if direction > 3
                 direction = 0
             end
-        elseif dir == -1
+        elseif dir == 3
             direction -= 1
             if direction < 0
                 direction = 3
@@ -104,19 +104,19 @@ function objf_hp( ind :: _individual )
 
     for i in 1:ind.n_genes * 2 + 1
         for j in 1:ind.n_genes * 2 + 1
-            if used[x, y] > 1
+            if used[i, j] > 1
                 obj -= 2
             end
 
             if i >= 2 && j >= 2 && i <= ind.n_genes * 2 && j < ind.n_genes * 2
-                if is_h[x, y] == 1
+                if is_h[i, j] == 1
                     bonus = 0
-                    bonus += is_h[x + 1, y + 0]
-                    bonus += is_h[x - 1, y + 0]
-                    bonus += is_h[x + 0, y + 1]
-                    bonus += is_h[x + 0, y - 1]
+                    bonus += is_h[i + 1, j + 0]
+                    bonus += is_h[i - 1, j + 0]
+                    bonus += is_h[i + 0, j + 1]
+                    bonus += is_h[i + 0, j - 1]
 
-                    bonus = bonus * bonus
+                    #=bonus = bonus * bonus=#
 
                     obj += bonus
                 end

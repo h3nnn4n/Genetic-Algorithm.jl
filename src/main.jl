@@ -16,15 +16,16 @@ include("crowding.jl")
 include("evo_loop.jl")
 
 function main()
-    #=println("Starting")=#
+    set_hp_model("HPPHHPH")
+
     res = 3
     nbits = 1
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 10000
+    pop.max_iter = 1000
     #=pop.n_genes = res*res=#
     #=pop.n_genes = res * nbits=#
-    pop.n_genes = 6
+    pop.n_genes = length(get_hp_model())
     pop.mchance = 0.015
     pop.cchance = 0.9
     pop.tourney_size = 2
@@ -53,8 +54,8 @@ function main()
     #=pop.crossover_function = crossover_one_point=#
     #=pop.crossover_function = crossover_blx=#
 
-    #=pop.selection_function = selection_ktourney=#
-    pop.selection_function = selection_roulette
+    pop.selection_function = selection_ktourney
+    #=pop.selection_function = selection_roulette=#
     #=pop.selection_function = selection_roulette_linear_scalling=#
     #=pop.selection_function = selection_random=#
     #=pop.selection_function = selection_nothing=#
@@ -81,8 +82,6 @@ function main()
 
     set_fitness_ub( res  * nbits * 30 )
 
-    set_hp_model("HPPHPH")
-
     for i in 1:pop.size
         new_guy = _individual(pop.n_genes, 0, 0, [])
         for j in 1:pop.n_genes
@@ -98,16 +97,16 @@ function main()
 
     result, best_ever = evolutionary_loop( pop )
 
-    #=genes = [(x -> x.value)(i) for i in best_ever.genetic_code]=#
+    genes = [(x -> x.value)(i) for i in best_ever.genetic_code]
 
-    #=for i in 1:length(genes)=#
-        #=@printf(STDERR, "%d", ((genes[i])))=#
+    for i in 1:length(genes)
+        @printf(STDERR, "%d", ((genes[i])))
         #=if mod(i, nbits) == 0=#
             #=@printf(STDERR, " ")=#
         #=end=#
-        #=[>print("$(i?:1:0) ")<]=#
-    #=end=#
-    #=@printf(STDERR, " = %f\n", best_ever.obj_f)=#
+        #=print("$(i) ")=#
+    end
+    @printf(STDERR, " = %f\n", best_ever.obj_f)
 
     view_hp(best_ever)
 
