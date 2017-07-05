@@ -1,3 +1,5 @@
+using Plots
+
 #using Images
 #using ImageView
 #using Colors
@@ -16,13 +18,14 @@ include("crowding.jl")
 include("evo_loop.jl")
 
 function main()
+    plotlyjs()
     set_hp_model("HPPHHPH")
 
     res = 3
     nbits = 1
     pop = spawn_empty_population()
     pop.size = 50
-    pop.max_iter = 1000
+    pop.max_iter = 100
     #=pop.n_genes = res*res=#
     #=pop.n_genes = res * nbits=#
     pop.n_genes = length(get_hp_model())

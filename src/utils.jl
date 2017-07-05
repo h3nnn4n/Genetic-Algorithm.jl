@@ -1,8 +1,12 @@
+
 include("objective_functions.jl")
 include("types.jl")
 
 function view_hp( ind :: _individual )
     model = get_hp_model()
+
+    xd = []
+    yd = []
 
     obj = 0
     gens = [(x -> x.value)(i) for i in ind.genetic_code]
@@ -18,6 +22,9 @@ function view_hp( ind :: _individual )
     if model[1] == 'H'
         is_h[x, y] += 1
     end
+
+    push!(xd, x)
+    push!(yd, y)
 
     for i in 2:ind.n_genes
         dir = gens[i]
@@ -50,34 +57,18 @@ function view_hp( ind :: _individual )
         if model[i] == 'H'
             is_h[x, y] += 1
         end
+
+        push!(xd, x)
+        push!(yd, y)
     end
 
-    for i in 1:ind.n_genes * 2 + 1
-        for j in 1:ind.n_genes * 2 + 1
-            if used[i, j] > 1
-                obj -= 2
-            end
+    println(xd)
+    println(yd)
 
-            if i >= 2 && j >= 2 && i <= ind.n_genes * 2 && j < ind.n_genes * 2
-                if is_h[i, j] == 1
-                    bonus = 0
-                    bonus += is_h[i + 1, j + 0]
-                    bonus += is_h[i - 1, j + 0]
-                    bonus += is_h[i + 0, j + 1]
-                    bonus += is_h[i + 0, j - 1]
-
-                    bonus = bonus * bonus
-
-                    obj += bonus
-                end
-            end
-        end
-    end
+    plot(xd, yd)
+    gui()
 
     display(used)
     println()
     display(is_h)
-    #=exit()=#
-
-    #=ind.obj_f = obj=#
 end
